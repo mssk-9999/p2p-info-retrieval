@@ -12,7 +12,7 @@ public class PTextField extends JPanel {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2968117372252629936L;
 	private static final String LABEL_SEPARATOR = ": ";
 
 	public PTextField() {

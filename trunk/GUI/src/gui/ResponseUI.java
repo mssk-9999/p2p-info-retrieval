@@ -1,11 +1,11 @@
 package gui;
 
+import gui.comp.PResponseWindow;
+
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import gui.comp.PRequestWindow;
-
-public class MainUI {
+public class ResponseUI {
 	
 	private static final String LOOKANDFEEL = "System";
 	
@@ -59,7 +59,7 @@ public class MainUI {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				initLookAndFeel();
-				PRequestWindow window = new PRequestWindow();
+				PResponseWindow window = new PResponseWindow();
 				window.showWindow();
 			}
 		});
