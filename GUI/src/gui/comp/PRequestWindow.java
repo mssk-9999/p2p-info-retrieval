@@ -1,23 +1,28 @@
 package gui.comp;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionListener;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class PRequestWindow extends PWindow{
+public class PRequestWindow extends PWindow {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6383984046501125366L;
-	private static final String WINDOW_TITLE = "Some Title";
+	private static final String WINDOW_TITLE = "Request";
 	private static final String SEARCH_FIELD_LABEL = "Search";
 	private static final String SEARCH_BUTTON_LABEL = "Go";
 	
+	private static final int WINDOW_WIDTH = 500;
+	private static final int WINDOW_HEIGHT = 500;
+	
 	public PRequestWindow() {
-		setWindowProperties();
 		addPanel();
-		
+		setWindowProperties();		
 	}
 
 	private void addPanel() {
@@ -34,7 +39,8 @@ public class PRequestWindow extends PWindow{
 
 	private void setWindowProperties() {
 		this.setTitle(WINDOW_TITLE);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
 	}
 
 }
