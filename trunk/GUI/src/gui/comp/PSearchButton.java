@@ -23,12 +23,21 @@ public class PSearchButton extends JPanel implements ActionListener {
 	
 	private void createButton() {
 		JButton searchButton = new JButton(labelText);
+		searchButton.setActionCommand("performSearch");
+		searchButton.addActionListener(this);
 		this.add(searchButton);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
+		if ("performSearch".equals(arg0.getActionCommand())) {
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					PResponseWindow window = new PResponseWindow();
+					window.showWindow();
+				}
+			});
+		}
 
 	}
 
