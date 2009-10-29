@@ -1,5 +1,0 @@
-<txt>Result 1</txt><link>http://www.google.com</link>
-<txt>Result 2</txt><link>http://www.google.com</link>
-<txt>Result 3</txt><link>http://www.google.com</link>
-<txt>Result 4</txt><link>http://www.google.com</link>
-<txt>Result 5</txt><link>http://www.google.com</link>
