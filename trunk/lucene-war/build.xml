@@ -28,7 +28,7 @@
 	
 	
   <property name="core.name" value="WebContent/WEB-INF/lib/lucene-core-${version}"/>
-  <property name="demo.name" value="WebContent/WEB-INF/lib/lucene-demos-${version}"/>
+  <property name="demo.name" value="build/lucene-demos-${version}"/>
   <property name="demo.war.name" value="luceneweb"/>
 
   <property name="manifest.file" location="${build.dir}/MANIFEST.MF"/>
@@ -66,10 +66,11 @@
   <target name="jar-all" depends="compile-all"
 	description="Build jar file">
 	<sequential>
+		<mkdir dir="${build.dir}"/>
   	  <build-manifest/>
 	  <jar
         destfile="${demo.name}.jar"
-        basedir="${build.dir}/classes"
+        basedir="WebContent/WEB-INF/classes"
         excludes="**/*.java"
         manifest="${manifest.file}">
         <metainf dir="${common.dir}">
@@ -105,11 +106,11 @@
   <!-- ================================================================== -->
   <target name="compile-all" depends="jar.core-check"
 	description="Compile all classes">
-    <mkdir dir="${build.dir}/classes"/>
+    <mkdir dir="${build.dir}"/>
 
     <compile
       srcdir="src"
-      destdir="${build.dir}/classes">
+      destdir="WebContent/WEB-INF/classes">
       <classpath refid="all.classpath"/>
     </compile>
   </target>
@@ -126,7 +127,7 @@
   <!-- ================================================================== -->
   <!--                                                                    -->
   <!-- ================================================================== -->
-  <target name="demo-index-text" depends="jar-all"
+  <target name="demo-index-text"
 	description="Run text indexing demo (index the sources of the demo).">
     <echo>----- (1) Prepare dir ----- </echo>
     <echo>cd ${common.dir} </echo>
@@ -135,7 +136,7 @@
     <echo>mkdir demo-text-dir </echo>
     <mkdir dir="${common.dir}/demo-text-dir"/>
     <echo>cd demo-text-dir </echo>
-    <echo>----- (2) Index the files located under ${common.dir}/src ----- </echo>
+    <echo>----- (2) Index the files located under ${common.dir}/src/demo ----- </echo>
     <invoke-java class="IndexFiles" params="${common.dir}/src/demo" paramsDisplay="../src/demo" type="text"/>
   </target>
 
@@ -144,7 +145,7 @@
   <!-- ================================================================== -->
   <!--                                                                    -->
   <!-- ================================================================== -->
-  <target name="demo-search-text" depends="jar-all"
+  <target name="demo-search-text"
 	description="Run interactive search demo.">
     <echo>----- Interactive search ----- </echo>
     <echo>cd demo-text-dir </echo>
@@ -157,7 +158,7 @@
   <!-- ================================================================== -->
   <!--                                                                    -->
   <!-- ================================================================== -->
-  <target name="demo-index-html" depends="jar-all"
+  <target name="demo-index-html"
 	description="Run html indexing demo (index the javadocs).">
     <echo>----- (1) Prepare dir ----- </echo>
     <echo>cd ${common.dir} </echo>
@@ -175,7 +176,7 @@
   <!-- ================================================================== -->
   <!--                                                                    -->
   <!-- ================================================================== -->
-  <target name="demo-search-html" depends="jar-all"
+  <target name="demo-search-html"
 	description="Run interactive search demo.">
     <echo>----- Interactive search ----- </echo>
     <echo>cd demo-html-dir </echo>
