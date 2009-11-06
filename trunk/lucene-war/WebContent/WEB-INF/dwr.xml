@@ -4,11 +4,6 @@
 
 <dwr>
   <allow>
-    <create creator="new" javascript="JDate">
-      <param name="class" value="java.util.Date"/>
-    </create>
-    <create creator="new" javascript="Result">
-      <param name="class" value="p2p.info.retrieval.web.model.Result"/>
-    </create>
+  
   </allow>
 </dwr>
