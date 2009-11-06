@@ -4,7 +4,7 @@
     PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
-<web-app>
+<web-app >
 	<display-name>lucene-war</display-name>
 	<servlet>
 		<servlet-name>lucene-war</servlet-name>
@@ -18,6 +18,14 @@
 		<init-param>
 			<param-name>debug</param-name>
 			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>classes</param-name>
+			<param-value>
+				p2p.info.retrieval.web.BasicReadExample
+				, p2p.info.retrieval.web.model.Employee
+				, p2p.info.retrieval.web.model.JsonReaderResponse
+			</param-value>
 		</init-param>
 	</servlet>
 
