@@ -78,6 +78,7 @@
           <include name="NOTICE.txt"/>
         </metainf>
       </jar>
+	<delete dir="${build.dir}/classes"/>
     </sequential>
   </target>
 
