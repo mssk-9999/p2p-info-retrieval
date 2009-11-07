@@ -1,4 +1,4 @@
-Ext.ns('p2p.ux.form.');
+Ext.ns('p2p.ux.form');
 
 p2p.ux.form.SearchField = Ext.extend(Ext.form.TwinTriggerField, {
     initComponent : function(){
