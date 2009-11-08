@@ -15,7 +15,7 @@ public class SearchFiles {
 	@RemoteMethod
 	public JsonReaderResponse<Result> getResults(String query) {
 		System.out.println("Query: " + query);
-		int numberOfRows = 10;
+		int numberOfRows = 200;
 		List<Result> results = new ArrayList<Result>(numberOfRows);
 		// Create dummy objects.
 		for (int i = 0; i < numberOfRows; i++) {

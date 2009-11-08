@@ -8,8 +8,8 @@ Ext.onReady(function(){
 	            this.onTrigger1Click();
 	            return;
 	        }
-	        
-	        ds.doRequest();
+	        var tab = addTab(v);
+	        tab.get(0).getStore().load();
 		}
 	});
 	
@@ -20,28 +20,6 @@ Ext.onReady(function(){
 		items: searchField
 	});
 
-	var ds = new Ext.data.Store({
-		proxy: new Ext.ux.data.DwrProxy({
-			apiActionToHandlerMap : {
-				read : {
-					dwrFunction : SearchFilesInterface.getResults,
-					getDwrArgsFunction : function(trans) {
-						return [
-							searchField.getValue()
-						];
-					}
-				}
-			}
-		}),
-		reader: new Ext.data.JsonReader({
-			root : 'objectsToConvertToRecords',
-			fields : [
-				{name: 'text'},
-				{name: 'link'}
-			]
-		})
-	});
-
 	// Custom rendering Template for the View
 	var resultTpl = new Ext.XTemplate(
 			'<tpl for=".">',
@@ -49,22 +27,62 @@ Ext.onReady(function(){
 			'<h3><a href="{link}" target="_blank">{text}</a></h3>',
 			'</div></tpl>'
 	);
+	
+	function addTab(query) {
+		var ds = new Ext.data.Store({
+			proxy: new Ext.ux.data.DwrProxy({
+				apiActionToHandlerMap : {
+					read : {
+						dwrFunction : SearchFilesInterface.getResults,
+						getDwrArgsFunction : function(trans) {
+							return [
+								query
+							];
+						}
+					}
+				}
+			}),
+			reader: new Ext.data.JsonReader({
+				root : 'objectsToConvertToRecords',
+				fields : [
+					{name: 'text'},
+					{name: 'link'}
+				]
+			})
+		});
+		
+		var tab = resultsPanel.add({
+			title: query,
+			closable: true,
+			iconCls: 'tabs',
+			items: new Ext.DataView({
+				tpl: resultTpl,
+				store: ds,
+				itemSelector: 'div.search-item'
+			}),
+			bbar: new Ext.PagingToolbar({
+	            store: ds,
+	            pageSize: 20,
+	            displayInfo: true,
+	            displayMsg: 'Results {0} - {1} of {2}',
+	            emptyMsg: "No results to display"
+	        })
+		});
+		resultsPanel.doLayout();
+		tab.show();
+		return tab;
+	}
 
-	var resultsPanel = new Ext.Panel({
-		renderTo: 'results',
+	var resultsPanel = new Ext.TabPanel({
+		renderTo: 'search-results',
 		resizeTabs:true, // turn on tab resizing
 		minTabWidth: 115,
 		tabWidth:135,
 		enableTabScroll:true,
 		width:600,
 		height:250,
+		autoScroll: true,
 		defaults: {autoScroll:true},
-		plugins: new Ext.ux.TabCloseMenu(),
-
-		items: new Ext.DataView({
-			tpl: resultTpl,
-			store: ds,
-			itemSelector: 'div.search-item'
-		})
+		plugins: new Ext.ux.TabCloseMenu()
 	});
 });
