@@ -1,8 +1,12 @@
 package p2p.info.retrieval.web;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.queryParser.ParseException;
 import org.directwebremoting.annotations.RemoteMethod;
 import org.directwebremoting.annotations.RemoteProxy;
 
@@ -15,11 +19,23 @@ public class SearchFiles {
 	@RemoteMethod
 	public JsonReaderResponse<Result> getResults(String query) {
 		System.out.println("Query: " + query);
-		int numberOfRows = 200;
-		List<Result> results = new ArrayList<Result>(numberOfRows);
-		// Create dummy objects.
-		for (int i = 0; i < numberOfRows; i++) {
-			results.add(new Result("Result " + i));
+		List<Result> results = new ArrayList<Result>();
+		List<Document> docs = null;
+		try {
+			docs = org.apache.lucene.demo.SearchFiles.doSimpleSearch(query);
+		} catch (CorruptIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// Create result objects.
+		for (Document doc : docs) {
+			results.add(new Result(doc));
 		}
 		return new JsonReaderResponse<Result>(results);
 	}
