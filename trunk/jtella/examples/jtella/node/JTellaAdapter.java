@@ -1,4 +1,4 @@
-package jtella.examples.mynode;
+package jtella.node;
 
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
