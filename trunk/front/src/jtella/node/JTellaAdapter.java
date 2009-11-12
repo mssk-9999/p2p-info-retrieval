@@ -1,4 +1,4 @@
-package jtella.examples.mynode;
+package jtella.node;
 
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
@@ -187,9 +187,9 @@ public class JTellaAdapter implements MessageReceiver {
     	
     	//For this simple example the list of hosts will be hard coded right here
 
-		Host host1= new Host("134.117.60.64",6346, 1, 1);
-		Host h2 = new Host ("141.41.29.78",16229,1,1);
-		Host h3 = new Host ("66.74.15.4",31311,1,1);
+		Host host1= new Host("134.117.59.63",6346, 1, 1);
+//		Host h2 = new Host ("141.41.29.78",16229,1,1);
+//		Host h3 = new Host ("66.74.15.4",31311,1,1);
 		//add new hosts if you want...
 		
 		
@@ -197,9 +197,9 @@ public class JTellaAdapter implements MessageReceiver {
 		HostCache hostCache =  c.getHostCache();
     	
 		hostCache.addHost(host1);
-		hostCache.addHost(h2);
-    	
-		hostCache.addHost(h3);
+//		hostCache.addHost(h2);
+//    	
+//		hostCache.addHost(h3);
     	
 		
     	LOG.info("== Finished initializing Host Cache ==");

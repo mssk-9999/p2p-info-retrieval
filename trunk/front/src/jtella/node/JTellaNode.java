@@ -1,4 +1,4 @@
-package jtella.examples.mynode;
+package jtella.node;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -6,6 +6,8 @@ import java.io.IOException;
 
 
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.lucene.demo.SearchFiles;
+
 
 import com.kenmccrary.jtella.GNUTellaConnection;
 import com.kenmccrary.jtella.MessageReceiver;
@@ -117,6 +119,8 @@ public class JTellaNode implements MessageReceiver {
 	public void receiveSearch(SearchMessage searchMessage) {
 		String criteria = searchMessage.getSearchCriteria();
 //		gui.incomingMsg("search:"+criteria);
+		
+		
 	}
 
 	/**
@@ -128,6 +132,8 @@ public class JTellaNode implements MessageReceiver {
 		for (int i =0;i<searchReplyMessage.getFileCount();i++){
 			output += searchReplyMessage.getFileRecord(i).getName() + "\n";
 		}
+		
+		SearchFiles.receiveSearchReply(output);
 		
 //		gui.callBack(output);
 	}
