@@ -22,13 +22,19 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import jtella.examples.mynode.JTellaNode;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.FilterIndexReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
@@ -196,6 +202,45 @@ public class SearchFiles {
     };
     
     searcher.search(query, streamingHitCollector);
+  }
+  
+  private static void propagateSearch(String line) throws Exception {
+	  JTellaNode node = new JTellaNode();
+	  
+	  node.injectmessage(line, "");
+  }
+  
+  /**
+   * @param line 
+   * @throws IOException 
+   * @throws CorruptIndexException 
+   * @throws ParseException 
+   * 
+   */
+  public static List<Document> doSimpleSearch(String line) throws CorruptIndexException, IOException, ParseException {
+	  String index = "M:/workspace/lucene/demo-text-dir/index";
+	  String field = "contents";
+	  int hitsPerPage = 10;
+	  
+	  IndexReader reader = IndexReader.open(FSDirectory.open(new File(index)), true); // only searching, so read-only=true
+	  Searcher searcher = new IndexSearcher(reader);
+	  Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
+	  QueryParser parser = new QueryParser(field, analyzer);
+	  Query query = parser.parse(line);
+
+	  // Collect enough docs to show 1 pages
+	  TopScoreDocCollector collector = TopScoreDocCollector.create(1 * hitsPerPage, false);
+	  searcher.search(query, collector);
+	  ScoreDoc[] hits = collector.topDocs().scoreDocs;
+	  
+	  List<Document> docs = new ArrayList<Document>(hits.length);
+	  for(int i = 0; i < hits.length; i++) {
+		  Document doc = searcher.doc(hits[i].doc);
+		  docs.add(doc);
+	  }
+	  
+	  
+	  return docs;
   }
 
   /**

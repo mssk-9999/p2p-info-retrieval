@@ -28,7 +28,7 @@
 	
 	
   <property name="core.name" value="lucene-core-${version}"/>
-  <property name="demo.name" value="lucene-demos-${version}"/>
+  <property name="demo.name" value="M:/workspace/front/WebContent/WEB-INF/lib/lucene-demos-${version}"/>
   <property name="demo.war.name" value="luceneweb"/>
 
   <property name="manifest.file" location="${build.dir}/MANIFEST.MF"/>
@@ -136,7 +136,7 @@
     <mkdir dir="${common.dir}/demo-text-dir"/>
     <echo>cd demo-text-dir </echo>
     <echo>----- (2) Index the files located under ${common.dir}/src/demo ----- </echo>
-    <invoke-java class="IndexFiles" params="${common.dir}/src/demo" paramsDisplay="../src/demo" type="text"/>
+    <invoke-java class="IndexFiles" params="${common.dir}/src/org" paramsDisplay="../src/org" type="text"/>
   </target>
 
   <!-- ================================================================== -->
@@ -234,7 +234,7 @@
     <attribute name="paramsDisplay"/>
     <attribute name="type"/>
     <sequential>
-      <echo>java -classpath "../${core.name}.jar;../${demo.name}.jar" org.apache.lucene.demo.@{class} @{paramsDisplay} </echo>
+      <echo>java -classpath "../${core.name}.jar;${demo.name}.jar" org.apache.lucene.demo.@{class} @{paramsDisplay} </echo>
       <java classname="org.apache.lucene.demo.@{class}"
             dir="${common.dir}/demo-@{type}-dir"
             fork="true"
@@ -244,7 +244,7 @@
         <arg value="@{params}"/>
         <classpath>
            <pathelement location="${common.dir}/${core.name}.jar"/>
-           <pathelement location="${common.dir}/${demo.name}.jar"/>
+           <pathelement location="${demo.name}.jar"/>
         </classpath>
       </java>
     </sequential>
