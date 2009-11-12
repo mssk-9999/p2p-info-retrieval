@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import jtella.examples.mynode.JTellaNode;
+import jtella.node.JTellaNode;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -66,6 +66,8 @@ public class SearchFiles {
       return in.norms(this.field);
     }
   }
+  
+  private static JTellaNode node = null;
 
   private SearchFiles() {}
 
@@ -205,9 +207,19 @@ public class SearchFiles {
   }
   
   private static void propagateSearch(String line) throws Exception {
-	  JTellaNode node = new JTellaNode();
+//	  JTellaNode node = new JTellaNode();
+	  if(node == null) {
+		  node = new JTellaNode();
+		  System.out.println("node created");
+	  }
 	  
 	  node.injectmessage(line, "");
+	  
+	  
+  }
+  
+  public static void receiveSearchReply(String line) {
+	  System.out.println("Result: " + line);
   }
   
   /**
@@ -217,7 +229,7 @@ public class SearchFiles {
    * @throws ParseException 
    * 
    */
-  public static List<Document> doSimpleSearch(String line) throws CorruptIndexException, IOException, ParseException {
+  public static List<Document> doSimpleSearch(String line) throws Exception {
 	  String index = "M:/workspace/lucene/demo-text-dir/index";
 	  String field = "contents";
 	  int hitsPerPage = 10;
@@ -227,6 +239,8 @@ public class SearchFiles {
 	  Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
 	  QueryParser parser = new QueryParser(field, analyzer);
 	  Query query = parser.parse(line);
+	  
+	  propagateSearch(line);
 
 	  // Collect enough docs to show 1 pages
 	  TopScoreDocCollector collector = TopScoreDocCollector.create(1 * hitsPerPage, false);
@@ -237,8 +251,7 @@ public class SearchFiles {
 	  for(int i = 0; i < hits.length; i++) {
 		  Document doc = searcher.doc(hits[i].doc);
 		  docs.add(doc);
-	  }
-	  
+	  }	  
 	  
 	  return docs;
   }
