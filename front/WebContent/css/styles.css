@@ -1,0 +1,29 @@
+#search-results a {
+	color: #385F95;
+	font: bold 11px tahoma, arial, helvetica, sans-serif;
+	text-decoration: none;
+}
+
+#search-results a:hover {
+	text-decoration: underline;
+}
+
+#search-results p {
+	margin: 3px !important;
+}
+
+#search-results .search-item {
+	padding: 5px;
+	border-bottom: 1px solid #ddd;
+	margin: 0 1px;
+	overflow: auto;
+	text-align: left;
+}
+
+#search-results .x-toolbar {
+	border: 0 none;
+}
+
+.tabs {
+	background-image: url( ../ext/resources/images/tabs.gif ) !important;
+}
