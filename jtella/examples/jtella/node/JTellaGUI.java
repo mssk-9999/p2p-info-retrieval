@@ -1,4 +1,4 @@
-package jtella.examples.mynode;
+package jtella.node;
 import javax.swing.*;
 
 import com.kenmccrary.jtella.GNUTellaConnection;

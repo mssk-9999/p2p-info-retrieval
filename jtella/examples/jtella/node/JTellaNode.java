@@ -1,4 +1,4 @@
-package jtella.examples.mynode;
+package jtella.node;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -6,6 +6,8 @@ import java.io.IOException;
 
 
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.lucene.demo.SearchFiles;
+
 
 import com.kenmccrary.jtella.GNUTellaConnection;
 import com.kenmccrary.jtella.MessageReceiver;
@@ -25,7 +27,7 @@ public class JTellaNode implements MessageReceiver {
 	private static final String defaultIpAddress = "190.156.46.30";
 	private static final int defaultListenPort = 6346;
 	private static final String LOGFILE = "mynode.log4j.properties";
-	private JTellaGUI gui;
+//	private JTellaGUI gui;
 	
 	private JTellaAdapter jta;
 		
@@ -44,7 +46,7 @@ public class JTellaNode implements MessageReceiver {
 		jta = JTellaAdapter.getInstance();
 		jta.setHost(IP);
 		
-		gui = new JTellaGUI("The JTella GUI", this);
+//		gui = new JTellaGUI("The JTella GUI", this);
 		
 		
 		/* Instantiate an anonymous subclass of WindowAdapter, and register it
@@ -52,19 +54,19 @@ public class JTellaNode implements MessageReceiver {
          * windowClosing() is invoked when the frame is in the process of being
          * closed to terminate the application.
          */
-		gui.addWindowListener(
-				new WindowAdapter() {
-					public void windowClosing(WindowEvent e) {
-						jta.shutdown();
-						System.exit(0);
-					}
-				}
-		);
+//		gui.addWindowListener(
+//				new WindowAdapter() {
+//					public void windowClosing(WindowEvent e) {
+//						jta.shutdown();
+//						System.exit(0);
+//					}
+//				}
+//		);
 
 		// Size the window to fit the preferred size and layout of its
 		// subcomponents, then show the window.
-		gui.pack();
-		gui.setVisible(true);
+//		gui.pack();
+//		gui.setVisible(true);
 		
 		//sign up to receive search messages
 		jta.addSearchListener(this);
@@ -102,6 +104,11 @@ public class JTellaNode implements MessageReceiver {
 		jta.searchNetwork(msg, id, this);
 		
 	}
+	
+	// TODO: implement method body
+	public void injectSearchReply(String msg, String id) {
+		
+	}
 
 	public void receivePush(PushMessage pushMessage) {
 		//do nothing
@@ -111,7 +118,14 @@ public class JTellaNode implements MessageReceiver {
 	
 	public void receiveSearch(SearchMessage searchMessage) {
 		String criteria = searchMessage.getSearchCriteria();
-		gui.incomingMsg("search:"+criteria);
+//		gui.incomingMsg("search:"+criteria);
+		
+		try {
+			SearchFiles.doSimpleSearch(criteria);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -124,7 +138,9 @@ public class JTellaNode implements MessageReceiver {
 			output += searchReplyMessage.getFileRecord(i).getName() + "\n";
 		}
 		
-		gui.callBack(output);
+		SearchFiles.receiveSearchReply(output);
+		
+//		gui.callBack(output);
 	}
 
 	public GNUTellaConnection getConnection() {
