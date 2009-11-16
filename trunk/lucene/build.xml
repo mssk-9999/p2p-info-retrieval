@@ -117,8 +117,8 @@
   <target name="clean"
     description="Removes contents of build directory">
     <delete dir="${build.dir}"/>
-    <delete dir="${common.dir}/demo-text-dir"/>
-    <delete dir="${common.dir}/demo-html-dir"/>
+    <!--<delete dir="${common.dir}/demo-text-dir"/>
+    <delete dir="${common.dir}/demo-html-dir"/>-->
   </target>
 
   <!-- ================================================================== -->
