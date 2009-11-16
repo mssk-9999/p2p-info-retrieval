@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lucene-core-2.9.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/front"/>
-	<classpathentry kind="src" path="/jtella"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jtella"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

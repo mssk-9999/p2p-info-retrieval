@@ -230,7 +230,7 @@ public class SearchFiles {
    * 
    */
   public static List<Document> doSimpleSearch(String line) throws Exception {
-	  String index = "M:/workspace/lucene/demo-text-dir/index";
+	  String index = "C:/temp/index";
 	  String field = "contents";
 	  int hitsPerPage = 10;
 	  
