@@ -213,7 +213,7 @@ public class SearchFiles {
 		  System.out.println("node created");
 	  }
 	  
-	  node.injectmessage(line, "");
+	  node.injectmessage(line, "someId");
 	  
 	  
   }
