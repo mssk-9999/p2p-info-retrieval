@@ -96,6 +96,11 @@ public class JTellaNode implements MessageReceiver {
 		}
 		
 	}
+	
+	public void finalize() {
+		jta.shutdown();
+		System.exit(0);
+	}
 
 	
 
@@ -107,6 +112,8 @@ public class JTellaNode implements MessageReceiver {
 	
 	// TODO: implement method body
 	public void injectSearchReply(String msg, String id) {
+		
+		jta.sendMessageWithID(msg, id);
 		
 	}
 
@@ -121,7 +128,8 @@ public class JTellaNode implements MessageReceiver {
 //		gui.incomingMsg("search:"+criteria);
 		
 		try {
-			SearchFiles.doSimpleSearch(criteria);
+//			SearchFiles.doSimpleSearch(criteria);
+			System.out.println("Search: " + criteria);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

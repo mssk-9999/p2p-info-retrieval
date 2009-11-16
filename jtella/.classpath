@@ -4,7 +4,8 @@
 	<classpathentry kind="src" path="examples"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.14.jar"/>
-	<classpathentry kind="lib" path="lib/jtella-07.jar"/>
-	<classpathentry kind="src" path="/lucene"/>
+	<classpathentry kind="lib" path="lib/jtella-07.steve.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/lucene"/>
+	<classpathentry kind="lib" path="/lucene/lucene-core-2.9.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
