@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.HashMap;
 
-import javax.servlet.ServletException;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -93,8 +91,8 @@ public class ServiceThread implements Runnable {
 
 
 
-			if (queryString == null || queryString.isEmpty())
-				throw new ServletException("no query specified");
+//			if (queryString == null || queryString.isEmpty())
+//				throw new ServletException("no query specified");
 
 			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);           //construct our usual analyzer
 			try {
