@@ -28,7 +28,7 @@
 	
 	
   <property name="core.name" value="lucene-core-${version}"/>
-  <property name="demo.name" value="C:/users/Steve/workspace/front/WebContent/WEB-INF/lib/lucene-demos-${version}"/>
+  <property name="demo.name" value="M:/workspace/front/WebContent/WEB-INF/lib/lucene-demos-${version}"/>
   <property name="demo.war.name" value="luceneweb"/>
 
   <property name="manifest.file" location="${build.dir}/MANIFEST.MF"/>
