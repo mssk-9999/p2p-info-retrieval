@@ -229,18 +229,25 @@ public class SearchFiles {
    * @throws ParseException 
    * 
    */
-  public static List<Document> doSimpleSearch(String line) throws Exception {
-	  String index = "C:/temp/index";
+  public static List<Document> doSimpleSearch(String line, boolean mustPropagate) throws Exception {
+	  String index = "M:/workspace/lucene/demo-text-dir/index";
 	  String field = "contents";
 	  int hitsPerPage = 10;
 	  
-	  IndexReader reader = IndexReader.open(FSDirectory.open(new File(index)), true); // only searching, so read-only=true
+	  IndexReader reader;
+	  try{
+		  reader = IndexReader.open(FSDirectory.open(new File(index)), true); // only searching, so read-only=true
+	  }catch(Exception e) {
+		  System.out.println("Exception in doSimpleSearch - Could not open index");
+		  return null;
+	  }
 	  Searcher searcher = new IndexSearcher(reader);
 	  Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
 	  QueryParser parser = new QueryParser(field, analyzer);
 	  Query query = parser.parse(line);
 	  
-	  propagateSearch(line);
+	  if(mustPropagate)
+		  propagateSearch(line);
 
 	  // Collect enough docs to show 1 pages
 	  TopScoreDocCollector collector = TopScoreDocCollector.create(1 * hitsPerPage, false);

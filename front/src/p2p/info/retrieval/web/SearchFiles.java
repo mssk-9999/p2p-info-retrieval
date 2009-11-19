@@ -18,9 +18,15 @@ public class SearchFiles {
 		System.out.println("Query: " + query);
 		List<Result> results = new ArrayList<Result>();
 		List<Document> docs = null;
+		boolean mustPropagate = true;
 
 		// Perform the search
-		docs = org.apache.lucene.demo.SearchFiles.doSimpleSearch(query);
+		try {
+			docs = org.apache.lucene.demo.SearchFiles.doSimpleSearch(query, mustPropagate);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		// Create result objects.
 		for (Document doc : docs) {
