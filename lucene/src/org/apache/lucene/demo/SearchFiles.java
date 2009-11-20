@@ -206,7 +206,7 @@ public class SearchFiles {
     searcher.search(query, streamingHitCollector);
   }
   
-  private static void propagateSearch(String line) throws Exception {
+  public static void propagateSearch(String line) throws Exception {
 //	  JTellaNode node = new JTellaNode();
 	  if(node == null) {
 		  node = new JTellaNode();
@@ -218,9 +218,7 @@ public class SearchFiles {
 	  
   }
   
-  public static void receiveSearchReply(String line) {
-	  System.out.println("Result: " + line);
-  }
+  
   
   /**
    * @param line 
@@ -229,7 +227,7 @@ public class SearchFiles {
    * @throws ParseException 
    * 
    */
-  public static List<Document> doSimpleSearch(String line, boolean mustPropagate) throws Exception {
+  public static List<Document> doSimpleSearch(String line) throws Exception {
 	  String index = "M:/workspace/lucene/demo-text-dir/index";
 	  String field = "contents";
 	  int hitsPerPage = 10;
@@ -245,9 +243,6 @@ public class SearchFiles {
 	  Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
 	  QueryParser parser = new QueryParser(field, analyzer);
 	  Query query = parser.parse(line);
-	  
-	  if(mustPropagate)
-		  propagateSearch(line);
 
 	  // Collect enough docs to show 1 pages
 	  TopScoreDocCollector collector = TopScoreDocCollector.create(1 * hitsPerPage, false);

@@ -6,5 +6,7 @@
 	<classpathentry kind="lib" path="lib/jtella-07.steve.jar" sourcepath="jtella07"/>
 	<classpathentry kind="lib" path="/lucene/lucene-core-2.9.0.jar"/>
 	<classpathentry kind="lib" path="/front/WebContent/WEB-INF/lib/lucene-demos-2.9.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/front"/>
+	<classpathentry kind="lib" path="/front/WebContent/WEB-INF/lib/json_simple-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
