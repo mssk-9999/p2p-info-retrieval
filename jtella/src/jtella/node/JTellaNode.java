@@ -8,9 +8,12 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.lucene.demo.SearchFiles;
 import org.apache.lucene.document.Document;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 
 import com.kenmccrary.jtella.GNUTellaConnection;
@@ -28,9 +31,8 @@ import com.kenmccrary.jtella.SearchReplyMessage;
 public class JTellaNode implements MessageReceiver {
 
 	private static final int defaultListenPort = 6346;
-	private static final String LOGFILE = "mynode.log4j.properties";
 	//	private JTellaGUI gui;
-
+	private static final Logger logger = Logger.getLogger(JTellaNode.class);
 	private JTellaAdapter jta;
 
 
@@ -49,7 +51,7 @@ public class JTellaNode implements MessageReceiver {
 
 		jta = JTellaAdapter.getInstance();
 		jta.setHost(addr);
-		
+
 		//sign up to receive search messages
 		jta.addSearchListener(this);
 	}
@@ -90,16 +92,24 @@ public class JTellaNode implements MessageReceiver {
 	}
 
 
+	public JTellaNode(String indexPath) {
+		this();
+		SearchFiles.setIndex(indexPath);
+	}
+
 	/**
 	 * @param args not used
 	 */
 	public static void main(String[] args) {
-		PropertyConfigurator.configure(LOGFILE);
 
 		JTellaNode node = null;
 		if (args.length==0){ //nothing is provided : use default values
 			System.out.println("Usage: JTellaNode [IPAddress port] \n Using default values.");
 			node = new JTellaNode();	
+		}
+
+		else if (args.length==1){
+			node = new JTellaNode(args[0]);
 		}
 
 		else if (args.length==2){
@@ -112,10 +122,10 @@ public class JTellaNode implements MessageReceiver {
 
 	}
 
-		public void finalize() {
-			jta.shutdown();
-			System.exit(0);
-		}
+	public void finalize() {
+		jta.shutdown();
+		System.exit(0);
+	}
 
 
 
@@ -138,6 +148,7 @@ public class JTellaNode implements MessageReceiver {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public void receiveSearch(SearchMessage searchMessage) {
 		String criteria = searchMessage.getSearchCriteria();
 		//		gui.incomingMsg("search:"+criteria);
@@ -148,20 +159,17 @@ public class JTellaNode implements MessageReceiver {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		String msg = "{";
+
+		JSONArray array = new JSONArray();
 		if (list != null) {
 			for(Document d : list) {
-				msg += "{";
-				msg += "title : ";
-				msg += d.get("title");
-				msg += ", ";
-				msg += "path : ";
-				msg += d.get("path");
-				msg += "};";
+				JSONObject obj = new JSONObject();
+				obj.put("path", d.get("path"));
+				obj.put("modified", d.get("modified"));
+				array.add(obj);
 			}
 		}
-		msg += "}";
-		injectSearchReply(msg, String.valueOf(searchMessage.hashCode()));
+		injectSearchReply(array.toJSONString(), String.valueOf(searchMessage.hashCode()));
 		try {
 			System.out.println("Search: " + criteria);
 		} catch (Exception e) {

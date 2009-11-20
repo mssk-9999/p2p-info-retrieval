@@ -4,7 +4,7 @@ Ext.onReady(function(){
 		fieldLabel: 'Search',
 		anchor: '100%',
 		onTrigger2Click : function(){
-			dwr.engine.setActiveReverseAjax(true);
+//			dwr.engine.setActiveReverseAjax(true);
 			var v = this.getRawValue();
 	        if(v.length < 1){
 	            this.onTrigger1Click();
@@ -26,11 +26,13 @@ Ext.onReady(function(){
 	var resultTpl = new Ext.XTemplate(
 			'<tpl for=".">',
 			'<div class="search-item">',
-			'<h3><a href="file://{path}" target="_blank">{path}</a></h3>',
+			'<h3><span>{modified:date("M j, Y")}</span>',
+			'<a href="file://{path}" target="_blank">{path}</a></h3>',
 			'</div></tpl>'
 	);
 	
 	function addTab(query) {
+		var returnLocalResults = true;
 		var ds = new Ext.data.Store({
 			proxy: new Ext.ux.data.DwrProxy({
 				apiActionToHandlerMap : {
@@ -38,7 +40,7 @@ Ext.onReady(function(){
 						dwrFunction : SearchFilesInterface.getResults,
 						getDwrArgsFunction : function(trans) {
 							return [
-								query
+								query, returnLocalResults
 							];
 						}
 					}
@@ -47,8 +49,8 @@ Ext.onReady(function(){
 			reader: new Ext.data.JsonReader({
 				root : 'objectsToConvertToRecords',
 				fields : [
-					{name: 'title'},
-					{name: 'path'}
+					{name: 'path'},
+					{name: 'modified'}
 				]
 			})
 		});

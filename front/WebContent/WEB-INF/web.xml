@@ -21,20 +21,20 @@
 				p2p.info.retrieval.web.model.JsonReaderResponse
 			</param-value>
 		</init-param>
+	</servlet>
+	<servlet>
+		<servlet-name>log4j-init</servlet-name>
+		<servlet-class>p2p.info.retrieval.web.init.Log4jInit</servlet-class>
 		<init-param>
-			<param-name>activeReverseAjaxEnabled</param-name>
-			<param-value>true</param-value>
+			<param-name>log4j-init-file</param-name>
+			<param-value>WEB-INF/log4j.lcf</param-value>
 		</init-param>
-		<init-param>
-			<param-name>maxWaitAfterWrite</param-name>
-			<param-value>-1</param-value>
-		</init-param>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>dwr-invoker</servlet-name>
 		<url-pattern>/dwr/*</url-pattern>
 	</servlet-mapping>
-
 
 </web-app>
