@@ -90,7 +90,7 @@ public class JTellaAdapter implements MessageReceiver {
      */
     private JTellaAdapter() {
     	initialize();
-    	initializeHostCache();
+//    	initializeHostCache();
     	messageTable= new HashMap<String, SearchMessage>();
     	openSessions = new HashMap<String, SearchSession>();
     	searchListeners = new HashSet<MessageReceiver>();
@@ -187,7 +187,7 @@ public class JTellaAdapter implements MessageReceiver {
     	
     	//For this simple example the list of hosts will be hard coded right here
 
-		Host host1= new Host("134.117.59.63",6346, 1, 1);
+		Host host1= new Host("134.117.59.59",6346, 1, 1);
 //		Host h2 = new Host ("141.41.29.78",16229,1,1);
 //		Host h3 = new Host ("66.74.15.4",31311,1,1);
 		//add new hosts if you want...

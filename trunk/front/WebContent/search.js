@@ -1,8 +1,10 @@
 Ext.onReady(function(){
+	
 	var searchField = new p2p.ux.form.SearchField({
 		fieldLabel: 'Search',
 		anchor: '100%',
 		onTrigger2Click : function(){
+			dwr.engine.setActiveReverseAjax(true);
 			var v = this.getRawValue();
 	        if(v.length < 1){
 	            this.onTrigger1Click();
