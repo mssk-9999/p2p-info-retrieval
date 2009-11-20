@@ -3,50 +3,57 @@ package p2p.info.retrieval.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
-import org.directwebremoting.ScriptSession;
-import org.directwebremoting.ServerContext;
-import org.directwebremoting.WebContextFactory;
 import org.directwebremoting.annotations.RemoteMethod;
 import org.directwebremoting.annotations.RemoteProxy;
 
 import p2p.info.retrieval.web.model.JsonReaderResponse;
 import p2p.info.retrieval.web.model.Result;
-import p2p.info.retrieval.web.model.ReverseAjaxThread;
 
 @RemoteProxy(name = "SearchFilesInterface")
 public class SearchFiles {
-
+	
+	private static final Logger logger = Logger.getLogger(SearchFiles.class);
+	private static List<Result> results = new ArrayList<Result>();
 
 	@RemoteMethod
-	public JsonReaderResponse<Result> getResults(String query) throws Exception {
-		System.out.println("Query: " + query);
-		List<Result> results = new ArrayList<Result>();
-		List<Document> docs = null;
+	public JsonReaderResponse<Result> getResults(String query, boolean returnLocalResults) throws Exception {
+		logger.info("New Query: " + query);
 
+		// Find the local results
+		if(returnLocalResults)
+			addLocalResults(query);
+		
 		// Propagate
 		org.apache.lucene.demo.SearchFiles.propagateSearch(query);
-
-		// Perform the local search
-		try {
-			docs = org.apache.lucene.demo.SearchFiles.doSimpleSearch(query);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// Create result objects.
-		for (Document doc : docs) {
-			results.add(new Result(doc));
-		}
+		
 		return new JsonReaderResponse<Result>(results);
+	}
+	
+	private void addLocalResults(String query) {
+		List<Document> docs;
+		
+		try {
+			// Perform the local search
+			docs = org.apache.lucene.demo.SearchFiles.doSimpleSearch(query);
+			
+			// Create result objects.
+			List<Result> localResults = Result.getResults(docs);
+			results.addAll(localResults);
+		} catch (Exception e) {
+			logger.error("Problem in addLocalResults - " + e.getMessage());
+		}
 	}
 
 	public static void receiveSearchReply(String line) {
-		System.out.println("Result: " + line);
+		logger.info("Result: " + line);
+		
+		List<Result> newResults = Result.getResults(line);
+		results.addAll(newResults);
 
-		ReverseAjaxThread thread = ReverseAjaxThread.getInstance();
-		thread.addScriptSession(WebContextFactory.get().getScriptSession());
+//		ReverseAjaxThread thread = ReverseAjaxThread.getInstance();
+//		thread.addScriptSession(WebContextFactory.get().getScriptSession());
 
 	}
 

@@ -40,17 +40,9 @@ public class JTellaAdapter implements MessageReceiver {
     /** Local port where Gnutella listens for incoming connections. */
     //TODO:check if it's really used!
     public static final String LOCAL_PORT = "6346";
-    
-
-    /** Name of Logger used by this adapter. */
-    public static final String LOGGER = "mynode";
 
     /** Logger used by this adapter. */
-    private static Logger LOG = Logger.getLogger(LOGGER);
-
-    /** Location of property file for Log4J configuration for this adapter. 
-     * this file must be in the java working directory * /
-    public static final String LOG_PROPERTY_FILE = "jtella.examples.log4j.properties";*/
+    private static Logger logger = Logger.getLogger(JTellaAdapter.class);
     
     /** local ip address*/
     private static String localhost;
@@ -90,11 +82,11 @@ public class JTellaAdapter implements MessageReceiver {
      */
     private JTellaAdapter() {
     	initialize();
-//    	initializeHostCache();
+    	initializeHostCache();
     	messageTable= new HashMap<String, SearchMessage>();
     	openSessions = new HashMap<String, SearchSession>();
     	searchListeners = new HashSet<MessageReceiver>();
-    	LOG.info("JTella adapter initialized.");
+    	logger.info("JTella adapter initialized.");
     }
     
     /**
@@ -162,20 +154,20 @@ public class JTellaAdapter implements MessageReceiver {
 			
 			openSessions = new HashMap<String,SearchSession>();
 			
-			LOG.info("Listening for incoming connections on port: " + incomingPort);
+			logger.info("Listening for incoming connections on port: " + incomingPort);
 			c.getConnectionData().setIncomingPort(Integer.parseInt(incomingPort));
-			LOG.info("JTellaAdapter:: init: about to start the GnutellaConnection" );
+			logger.info("JTellaAdapter:: init: about to start the GnutellaConnection" );
 			c.start();
-			LOG.info("JTellaAdapter:: init: GnutellaConnection started" );
+			logger.info("JTellaAdapter:: init: GnutellaConnection started" );
 		} 
 		catch(NumberFormatException e) {
-			LOG.debug("NumberFormatException while initializing JTella adapter: " + e.getMessage());	
+			logger.debug("NumberFormatException while initializing JTella adapter: " + e.getMessage());	
 		}
     	catch (UnknownHostException e) {
-			LOG.error("UnknownHostException while initializing JTellaAdapter: " + e.getMessage());
+			logger.error("UnknownHostException while initializing JTellaAdapter: " + e.getMessage());
 		} 
 		catch (IOException e) {
-			LOG.error("IOException while initializing JTellaAdapter: " + e.getMessage());
+			logger.error("IOException while initializing JTellaAdapter: " + e.getMessage());
 		}
     }
     
@@ -183,11 +175,11 @@ public class JTellaAdapter implements MessageReceiver {
      * Initializes the Host Cache
      */
     private void initializeHostCache() {
-    	LOG.info("== Initializing Host Cache ==");
+    	logger.info("== Initializing Host Cache ==");
     	
     	//For this simple example the list of hosts will be hard coded right here
 
-		Host host1= new Host("134.117.59.59",6346, 1, 1);
+		Host host1= new Host("192.168.0.184",6346, 1, 1);
 //		Host h2 = new Host ("141.41.29.78",16229,1,1);
 //		Host h3 = new Host ("66.74.15.4",31311,1,1);
 		//add new hosts if you want...
@@ -202,7 +194,7 @@ public class JTellaAdapter implements MessageReceiver {
 //		hostCache.addHost(h3);
     	
 		
-    	LOG.info("== Finished initializing Host Cache ==");
+    	logger.info("== Finished initializing Host Cache ==");
     }
     
 
@@ -210,7 +202,7 @@ public class JTellaAdapter implements MessageReceiver {
      * Performs a search on the GNutella network [responses by callback of this.receiveSearchReply]
      */
 	public void searchNetwork(String query, String uniqueId, MessageReceiver receiver) {
-		LOG.info("User requesting to search the network. Query:: " + query);
+		logger.info("User requesting to search the network. Query:: " + query);
 		
 		
         
@@ -218,12 +210,12 @@ public class JTellaAdapter implements MessageReceiver {
 		//store the open search session so we can close it some day!!
 		openSessions.put(uniqueId, session);
 		
-		LOG.info("JTellaAdapter:exiting search method");        
+		logger.info("JTellaAdapter:exiting search method");        
 	}
 
 	public void shutdown() {
 		//TODO - is there anything else to the shutdown sequence?
-		LOG.info("Stopping Gnutella connection");
+		logger.info("Stopping Gnutella connection");
 		c.stop();
 		for (SearchSession s: openSessions.values()){
 			s.close();
@@ -246,7 +238,7 @@ public class JTellaAdapter implements MessageReceiver {
 	 * TODO: use a different interface and provide the reply-to-id  
 	 */
 	public void receiveSearch(SearchMessage message) {
-		LOG.info("Received a search message");
+		logger.info("Received a search message");
 
 		//Parse message ?
 		String rawmsg = message.getSearchCriteria().trim();
@@ -262,7 +254,7 @@ public class JTellaAdapter implements MessageReceiver {
 		}
 		else {
 			//otherwise we just ignore the query, we've already had it [the exact same id]
-			LOG.info("Ignoring search message with id "+ String.valueOf(message.hashCode()) +" already being processed" );
+			logger.info("Ignoring search message with id "+ String.valueOf(message.hashCode()) +" already being processed" );
 		}
 	}
 
@@ -282,12 +274,12 @@ public class JTellaAdapter implements MessageReceiver {
 	
     
 	public void sendMessageWithID(String xmlmsg, String qid){
-		LOG.info(" -Sending the search response");
-		LOG.debug("content="+xmlmsg);
+		logger.info(" -Sending the search response");
+		logger.debug("content="+xmlmsg);
 
 		
 		//get the message of the original query
-		LOG.debug("getting original msg with id:"+qid);
+		logger.debug("getting original msg with id:"+qid);
 		SearchMessage message = messageTable.get(qid) ;
 
 
@@ -309,7 +301,7 @@ public class JTellaAdapter implements MessageReceiver {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			LOG.info("JTellaAdapter: Finished sending search response");
+			logger.info("JTellaAdapter: Finished sending search response");
 		}
 
 	/**
