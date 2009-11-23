@@ -14,6 +14,7 @@ import org.apache.lucene.demo.SearchFiles;
 import org.apache.lucene.document.Document;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 
 import com.kenmccrary.jtella.GNUTellaConnection;
@@ -101,10 +102,12 @@ public class JTellaNode implements MessageReceiver {
 	 * @param args not used
 	 */
 	public static void main(String[] args) {
+		
+		
 
 		JTellaNode node = null;
 		if (args.length==0){ //nothing is provided : use default values
-			System.out.println("Usage: JTellaNode [IPAddress port] \n Using default values.");
+			System.out.println("Usage: JTellaNode [indexPath] \n Using default values.");
 			node = new JTellaNode();	
 		}
 
@@ -112,17 +115,18 @@ public class JTellaNode implements MessageReceiver {
 			node = new JTellaNode(args[0]);
 		}
 
-		else if (args.length==2){
-			node = new JTellaNode(args[0], Integer.parseInt(args[1]));
-		}
+//		else if (args.length==2){
+//			node = new JTellaNode(args[0], Integer.parseInt(args[1]));
+//		}
 		else {
-			System.out.println("Invalid number of arguments! \n Usage: JTellaNode [IPAddress port] \n Using default values.");
+			System.out.println("Invalid number of arguments! \n Usage: JTellaNode [indexPath] \n Using default values.");
 			node = new JTellaNode();	
 		}
 
 	}
 
 	public void finalize() {
+		logger.info("Node shutting down...");
 		jta.shutdown();
 		System.exit(0);
 	}
@@ -151,31 +155,34 @@ public class JTellaNode implements MessageReceiver {
 	@SuppressWarnings("unchecked")
 	public void receiveSearch(SearchMessage searchMessage) {
 		String criteria = searchMessage.getSearchCriteria();
-		//		gui.incomingMsg("search:"+criteria);
+		logger.info("Search: " + criteria);
+		
 		List<Document> list = null;
+		
+		JSONObject searchObj = (JSONObject)JSONValue.parse(criteria);
+		String sessionId = (String)searchObj.get("sessionId");
+		String searchStr = (String)searchObj.get("query");
 		try {
-			list = SearchFiles.doSimpleSearch(criteria);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			list = SearchFiles.doSimpleSearch(searchStr);
+		} catch (Exception e) {
+			logger.error("Exception performing search", e);
 		}
 
-		JSONArray array = new JSONArray();
+		JSONObject resultsObj = new JSONObject();
+		resultsObj.put("sessionId", sessionId);
+		
+		JSONArray resultArr = new JSONArray();
 		if (list != null) {
 			for(Document d : list) {
-				JSONObject obj = new JSONObject();
-				obj.put("path", d.get("path"));
-				obj.put("modified", d.get("modified"));
-				array.add(obj);
+				JSONObject resultObj = new JSONObject();
+				resultObj.put("path", d.get("path"));
+				resultObj.put("modified", d.get("modified"));
+				resultArr.add(resultObj);
 			}
 		}
-		injectSearchReply(array.toJSONString(), String.valueOf(searchMessage.hashCode()));
-		try {
-			System.out.println("Search: " + criteria);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		resultsObj.put("searchResults", resultArr);
+		injectSearchReply(resultsObj.toJSONString(), String.valueOf(searchMessage.hashCode()));
+		
 	}
 
 	/**
@@ -188,6 +195,7 @@ public class JTellaNode implements MessageReceiver {
 			output += searchReplyMessage.getFileRecord(i).getName() + "\n";
 		}
 
+		
 		p2p.info.retrieval.web.SearchFiles.receiveSearchReply(output);
 
 		//		gui.callBack(output);
