@@ -33,6 +33,7 @@ Ext.onReady(function(){
 	
 	function addTab(query) {
 		var returnLocalResults = true;
+		
 		var ds = new Ext.data.Store({
 			proxy: new Ext.ux.data.DwrProxy({
 				apiActionToHandlerMap : {
@@ -69,7 +70,8 @@ Ext.onReady(function(){
 	            pageSize: 20,
 	            displayInfo: true,
 	            displayMsg: 'Results {0} - {1} of {2}',
-	            emptyMsg: "No results to display"
+	            emptyMsg: "No results to display",
+	            plugins: new Ext.ux.grid.AutoRefresher()
 	        })
 		});
 		resultsPanel.doLayout();

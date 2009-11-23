@@ -13,7 +13,6 @@ import org.directwebremoting.annotations.RemoteProperty;
 import org.directwebremoting.convert.ObjectConverter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 @DataTransferObject(converter = ObjectConverter.class)
 public class Result {
@@ -51,11 +50,11 @@ public class Result {
 		this.path = (String)obj.get("path");
 	}
 	
-	public static List<Result> getResults(String JSONString) {
+	public static List<Result> getResultsFromArray(JSONArray arr) {
 		
 		List<Result> results;
 		
-		JSONArray arr = (JSONArray) JSONValue.parse(JSONString);
+//		JSONArray arr = (JSONArray) JSONValue.parse(JSONString);
 		
 		results = new ArrayList<Result>(arr.size());
 		
