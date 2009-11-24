@@ -1,5 +1,6 @@
 package p2p.info.retrieval.web.model;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,8 +12,9 @@ import org.apache.lucene.document.Document;
 import org.directwebremoting.annotations.DataTransferObject;
 import org.directwebremoting.annotations.RemoteProperty;
 import org.directwebremoting.convert.ObjectConverter;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.directwebremoting.json.types.JsonArray;
+import org.directwebremoting.json.types.JsonObject;
+import org.directwebremoting.json.types.JsonValue;
 
 @DataTransferObject(converter = ObjectConverter.class)
 public class Result {
@@ -41,25 +43,22 @@ public class Result {
 		return results;
 	}
 	
-	private Result(JSONObject obj) {
+	private Result(JsonObject obj) {
+		DateFormat format = DateFormat.getInstance();
 		try {
-			this.modified = DateTools.stringToDate((String)obj.get("modified"));
+			this.modified = format.parse(obj.get("modified").getString());
 		} catch (ParseException e) {
 			logger.warn("Could not parse 'modified' field - it will be null");
 		}
-		this.path = (String)obj.get("path");
+		this.path = obj.get("path").getString();
 	}
 	
-	public static List<Result> getResultsFromArray(JSONArray arr) {
+	public static List<Result> getResultsFromArray(JsonArray searchResults) {
 		
-		List<Result> results;
+		List<Result> results = new ArrayList<Result>(searchResults.size());
 		
-//		JSONArray arr = (JSONArray) JSONValue.parse(JSONString);
-		
-		results = new ArrayList<Result>(arr.size());
-		
-		for(Object obj : arr) {
-			results.add(new Result((JSONObject) obj));
+		for(JsonValue obj : searchResults) {
+			results.add(new Result(obj.getJsonObject()));
 		}
 		
 		return results;

@@ -6,8 +6,8 @@
 
 <web-app>
 	<servlet>
-		<servlet-name>dwr-invoker</servlet-name>
-		<display-name>DWR Servlet</display-name>
+		<servlet-name>DWR controller servlet</servlet-name>
+		<description>DWR controller servlet</description>
 		<servlet-class>org.directwebremoting.servlet.DwrServlet</servlet-class>
 		<init-param>
 			<param-name>debug</param-name>
@@ -21,6 +21,10 @@
 				p2p.info.retrieval.web.model.JsonReaderResponse
 			</param-value>
 		</init-param>
+		<init-param>
+			<param-name>activeReverseAjaxEnabled</param-name>
+			<param-value>true</param-value>
+		</init-param>
 	</servlet>
 	<servlet>
 		<servlet-name>log4j-init</servlet-name>
@@ -33,7 +37,7 @@
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>dwr-invoker</servlet-name>
+		<servlet-name>DWR controller servlet</servlet-name>
 		<url-pattern>/dwr/*</url-pattern>
 	</servlet-mapping>
 
