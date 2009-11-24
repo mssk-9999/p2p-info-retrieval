@@ -1,10 +1,12 @@
 Ext.onReady(function(){
 	
+	// Activate reverse ajax in dwr
+	dwr.engine.setActiveReverseAjax(true);
+	
 	var searchField = new p2p.ux.form.SearchField({
 		fieldLabel: 'Search',
 		anchor: '100%',
 		onTrigger2Click : function(){
-//			dwr.engine.setActiveReverseAjax(true);
 			var v = this.getRawValue();
 	        if(v.length < 1){
 	            this.onTrigger1Click();
@@ -32,16 +34,15 @@ Ext.onReady(function(){
 	);
 	
 	function addTab(query) {
-		var returnLocalResults = true;
 		
 		var ds = new Ext.data.Store({
 			proxy: new Ext.ux.data.DwrProxy({
 				apiActionToHandlerMap : {
 					read : {
-						dwrFunction : SearchFilesInterface.getResults,
+						dwrFunction : SearchFiles.getResults,
 						getDwrArgsFunction : function(trans) {
 							return [
-								query, returnLocalResults
+								query
 							];
 						}
 					}
