@@ -13,6 +13,10 @@ import org.directwebremoting.WebContextFactory;
 import org.directwebremoting.annotations.RemoteMethod;
 import org.directwebremoting.annotations.RemoteProxy;
 import org.directwebremoting.extend.ScriptSessionManager;
+import org.directwebremoting.json.JsonUtil;
+import org.directwebremoting.json.parse.JsonDecoder;
+import org.directwebremoting.json.parse.JsonParser;
+import org.directwebremoting.json.parse.JsonParserFactory;
 import org.directwebremoting.json.types.JsonArray;
 import org.directwebremoting.json.types.JsonObject;
 import org.directwebremoting.json.types.JsonString;
@@ -98,26 +102,32 @@ public class SearchFiles {
 	 * "searchResults" : [{"path" : "somePath", "modified" : some date}, {"path" : "someOtherPath", "modified" : some other date}]
 	 * }
 	 * @param line
+	 * @throws Exception 
 	 */
 	//	@RemoteMethod
-	public static void receiveSearchReply(String line) {
+	public static void receiveSearchReply(String line) throws Exception {
 		logger.info("Result: " + line);
 
-		JsonObject obj = new JsonString(line).getJsonObject();
+		try {
+			JsonObject obj = new JsonString(line).getJsonObject();
 
-		JsonArray searchResults = obj.get("searchResults").getJsonArray();
-		List<Result> newResults = Result.getResultsFromArray(searchResults);
+			JsonArray searchResults = obj.get("searchResults").getJsonArray();
+			List<Result> newResults = Result.getResultsFromArray(searchResults);
 
-		Container container = ServerContextFactory.get().getContainer();
-		ScriptSessionManager manager = container.getBean(ScriptSessionManager.class);
+			Container container = ServerContextFactory.get().getContainer();
+			ScriptSessionManager manager = container.getBean(ScriptSessionManager.class);
 
-		String sessionId = obj.get("sessionId").getString();
-		ScriptSession session = manager.getScriptSession(sessionId, null, null);
+			String sessionId = obj.get("sessionId").getString();
+			ScriptSession session = manager.getScriptSession(sessionId, null, null);
 
-		//TODO: add data to return
+			//TODO: add data to return
 
-		ReverseAjaxThread thread = ReverseAjaxThread.getInstance();
-		thread.addScriptSession(session);
+			ReverseAjaxThread thread = ReverseAjaxThread.getInstance();
+			thread.addScriptSession(session);
+		} catch (Exception e) {
+			logger.error("Exception in receiveSearchReply", e);
+			throw new Exception("Problem receiving the search reply: " + e.getMessage());
+		}
 
 	}
 }
