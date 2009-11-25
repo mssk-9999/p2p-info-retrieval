@@ -126,7 +126,7 @@ public class JTellaNode implements MessageReceiver {
 	}
 
 	public void finalize() {
-		logger.info("Node shutting down...");
+		System.out.println("Node shutting down...");
 		jta.shutdown();
 		System.exit(0);
 	}
@@ -155,33 +155,37 @@ public class JTellaNode implements MessageReceiver {
 	@SuppressWarnings("unchecked")
 	public void receiveSearch(SearchMessage searchMessage) {
 		String criteria = searchMessage.getSearchCriteria();
-		logger.info("Search: " + criteria);
+		System.out.println("Search: " + criteria);
 		
 		List<Document> list = null;
 		
-		JSONObject searchObj = (JSONObject)JSONValue.parse(criteria);
-		String sessionId = (String)searchObj.get("sessionId");
-		String searchStr = (String)searchObj.get("query");
 		try {
-			list = SearchFiles.doSimpleSearch(searchStr);
-		} catch (Exception e) {
-			logger.error("Exception performing search", e);
-		}
-
-		JSONObject resultsObj = new JSONObject();
-		resultsObj.put("sessionId", sessionId);
-		
-		JSONArray resultArr = new JSONArray();
-		if (list != null) {
-			for(Document d : list) {
-				JSONObject resultObj = new JSONObject();
-				resultObj.put("path", d.get("path"));
-				resultObj.put("modified", d.get("modified"));
-				resultArr.add(resultObj);
+			JSONObject searchObj = (JSONObject)JSONValue.parse(criteria);
+			String sessionId = (String)searchObj.get("sessionId");
+			String searchStr = (String)searchObj.get("query");
+			try {
+				list = SearchFiles.doSimpleSearch(searchStr);
+			} catch (Exception e) {
+				logger.error("Exception performing search", e);
 			}
+
+			JSONObject resultsObj = new JSONObject();
+			resultsObj.put("sessionId", sessionId);
+			
+			JSONArray resultArr = new JSONArray();
+			if (list != null) {
+				for(Document d : list) {
+					JSONObject resultObj = new JSONObject();
+					resultObj.put("path", d.get("path"));
+					resultObj.put("modified", d.get("modified"));
+					resultArr.add(resultObj);
+				}
+			}
+			resultsObj.put("searchResults", resultArr);
+			injectSearchReply(resultsObj.toJSONString(), String.valueOf(searchMessage.hashCode()));
+		} catch (Exception e) {
+			logger.error("Exception in receiveSearch", e);
 		}
-		resultsObj.put("searchResults", resultArr);
-		injectSearchReply(resultsObj.toJSONString(), String.valueOf(searchMessage.hashCode()));
 		
 	}
 
@@ -196,7 +200,11 @@ public class JTellaNode implements MessageReceiver {
 		}
 
 		
-		p2p.info.retrieval.web.SearchFiles.receiveSearchReply(output);
+		try {
+			p2p.info.retrieval.web.SearchFiles.receiveSearchReply(output);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
 
 		//		gui.callBack(output);
 	}

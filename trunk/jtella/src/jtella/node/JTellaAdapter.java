@@ -86,7 +86,7 @@ public class JTellaAdapter implements MessageReceiver {
     	messageTable= new HashMap<String, SearchMessage>();
     	openSessions = new HashMap<String, SearchSession>();
     	searchListeners = new HashSet<MessageReceiver>();
-    	logger.info("JTella adapter initialized.");
+    	System.out.println("JTella adapter initialized.");
     }
     
     /**
@@ -154,11 +154,11 @@ public class JTellaAdapter implements MessageReceiver {
 			
 			openSessions = new HashMap<String,SearchSession>();
 			
-			logger.info("Listening for incoming connections on port: " + incomingPort);
+			System.out.println("Listening for incoming connections on port: " + incomingPort);
 			c.getConnectionData().setIncomingPort(Integer.parseInt(incomingPort));
-			logger.info("JTellaAdapter:: init: about to start the GnutellaConnection" );
+			System.out.println("JTellaAdapter:: init: about to start the GnutellaConnection" );
 			c.start();
-			logger.info("JTellaAdapter:: init: GnutellaConnection started" );
+			System.out.println("JTellaAdapter:: init: GnutellaConnection started" );
 		} 
 		catch(NumberFormatException e) {
 			logger.debug("NumberFormatException while initializing JTella adapter: " + e.getMessage());	
@@ -175,7 +175,7 @@ public class JTellaAdapter implements MessageReceiver {
      * Initializes the Host Cache
      */
     private void initializeHostCache() {
-    	logger.info("== Initializing Host Cache ==");
+    	System.out.println("== Initializing Host Cache ==");
     	
     	//For this simple example the list of hosts will be hard coded right here
 
@@ -194,7 +194,7 @@ public class JTellaAdapter implements MessageReceiver {
 //		hostCache.addHost(h3);
     	
 		
-    	logger.info("== Finished initializing Host Cache ==");
+    	System.out.println("== Finished initializing Host Cache ==");
     }
     
 
@@ -202,7 +202,7 @@ public class JTellaAdapter implements MessageReceiver {
      * Performs a search on the GNutella network [responses by callback of this.receiveSearchReply]
      */
 	public void searchNetwork(String query, String uniqueId, MessageReceiver receiver) {
-		logger.info("User requesting to search the network. Query:: " + query);
+		System.out.println("User requesting to search the network. Query:: " + query);
 		
 		
         
@@ -210,12 +210,12 @@ public class JTellaAdapter implements MessageReceiver {
 		//store the open search session so we can close it some day!!
 		openSessions.put(uniqueId, session);
 		
-		logger.info("JTellaAdapter:exiting search method");        
+		System.out.println("JTellaAdapter:exiting search method");        
 	}
 
 	public void shutdown() {
 		//TODO - is there anything else to the shutdown sequence?
-		logger.info("Stopping Gnutella connection");
+		System.out.println("Stopping Gnutella connection");
 		c.stop();
 		for (SearchSession s: openSessions.values()){
 			s.close();
@@ -238,7 +238,7 @@ public class JTellaAdapter implements MessageReceiver {
 	 * TODO: use a different interface and provide the reply-to-id  
 	 */
 	public void receiveSearch(SearchMessage message) {
-		logger.info("Received a search message");
+		System.out.println("Received a search message");
 
 		//Parse message ?
 		String rawmsg = message.getSearchCriteria().trim();
@@ -254,7 +254,7 @@ public class JTellaAdapter implements MessageReceiver {
 		}
 		else {
 			//otherwise we just ignore the query, we've already had it [the exact same id]
-			logger.info("Ignoring search message with id "+ String.valueOf(message.hashCode()) +" already being processed" );
+			System.out.println("Ignoring search message with id "+ String.valueOf(message.hashCode()) +" already being processed" );
 		}
 	}
 
@@ -274,7 +274,7 @@ public class JTellaAdapter implements MessageReceiver {
 	
     
 	public void sendMessageWithID(String xmlmsg, String qid){
-		logger.info(" -Sending the search response");
+		System.out.println(" -Sending the search response");
 		logger.debug("content="+xmlmsg);
 
 		
@@ -301,7 +301,7 @@ public class JTellaAdapter implements MessageReceiver {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			logger.info("JTellaAdapter: Finished sending search response");
+			System.out.println("JTellaAdapter: Finished sending search response");
 		}
 
 	/**
