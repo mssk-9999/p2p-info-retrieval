@@ -1,5 +1,6 @@
 package p2p.info.retrieval.web;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,50 +26,41 @@ import p2p.info.retrieval.web.model.ReverseAjaxThread;
 public class SearchFiles {
 
 	private static final Logger logger = Logger.getLogger(SearchFiles.class);
-	private static Map<String, ScriptSession> sessions = new HashMap<String, ScriptSession>();
+	private static Map<Long, ScriptSession> sessions = new HashMap<Long, ScriptSession>();
 
 	@RemoteMethod
-	public JsonReaderResponse<Result> getResults(String query) throws Exception {
+//	public JsonReaderResponse<Result> getResults(String query, String callback) throws Exception {
+	public void getResults(String query, String callback) throws Exception {
 		logger.info("New Query: " + query);
 		
 		try {
 			ScriptSession session = WebContextFactory.get().getScriptSession();
-			String sessionId = session.getId();
+			long sessionId = new Date().getTime();
 			logger.info("Session id: " + sessionId);
 
 			ScriptSession existingSession = sessions.get(sessionId);
 
-			// Keep track of whether we have to update the stored session
-			boolean sessionChanged = false;
+			List<Result> results = null;
 
 			// Session has yet to be stored... aka its a new search
 			if(existingSession == null) {
 				existingSession = session;
-				sessionChanged = true;
-			}
-
-			List<Result> results = (List<Result>)existingSession.getAttribute("results");
-
-			// This is the first time we've queried
-			// so include the local results
-			if(results == null) {
-				results = getLocalResults(query);
-				sessionChanged = true;
-			}
-
-			if(sessionChanged) {
-				existingSession.setAttribute("results", results);
+//				results = getLocalResults(query);
+				
+//				existingSession.setAttribute("results", results);
 				sessions.put(sessionId, existingSession);
 			}
+			
+			existingSession.setAttribute("callback", callback.trim());
 
 			JSONObject jsonQuery = new JSONObject();
-			jsonQuery.put("sessionId", sessionId);
+			jsonQuery.put("sessionId", Long.toString(sessionId));
 			jsonQuery.put("query", query.trim());
 
 			// Propagate to other nodes
 			org.apache.lucene.demo.SearchFiles.propagateSearch(jsonQuery.toJSONString());
 
-			return new JsonReaderResponse<Result>(results);
+//			return new JsonReaderResponse<Result>(results);
 		} catch (Exception e) {
 			logger.error("Exception in getResults - ", e);
 			throw new Exception("Problem getting the results: " + e.getMessage());
@@ -113,10 +105,15 @@ public class SearchFiles {
 			Container container = ServerContextFactory.get().getContainer();
 			ScriptSessionManager manager = container.getBean(ScriptSessionManager.class);
 
-			String sessionId = (String)obj.get("sessionId");
-			ScriptSession session = manager.getScriptSession(sessionId, null, null);
+			logger.info("sessionId: " + obj.get("sessionId"));
+			long sessionId = Long.valueOf((String) obj.get("sessionId"));
+//			ScriptSession session = manager.getScriptSession(sessionId, null, null);
+			ScriptSession session = sessions.get(sessionId);
 
-			//TODO: add data to return
+			if(session.getAttribute("callback") == null)
+				session.setAttribute("callback", "Ext.emptyFn");
+			
+			session.setAttribute("results", newResults);
 
 			ReverseAjaxThread thread = ReverseAjaxThread.getInstance();
 			thread.addScriptSession(session);
