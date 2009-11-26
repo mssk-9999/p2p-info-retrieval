@@ -175,6 +175,7 @@ public class JTellaNode implements MessageReceiver {
 					JSONObject resultObj = new JSONObject();
 					resultObj.put("path", d.get("path"));
 					resultObj.put("modified", d.get("modified"));
+					resultObj.put("size", d.get("size"));
 					resultArr.add(resultObj);
 				}
 			}
