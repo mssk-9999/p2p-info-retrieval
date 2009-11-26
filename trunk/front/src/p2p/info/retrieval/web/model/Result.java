@@ -24,6 +24,9 @@ public class Result {
 	
 	@RemoteProperty
 	public Date modified;
+
+	@RemoteProperty
+	public String size;
 	
 	public Result(Document doc) {
 		try {
@@ -32,6 +35,7 @@ public class Result {
 			logger.warn("Could not parse 'modified' field - it will be null");
 		}
 		this.path = doc.get("path");
+		this.size = doc.get("size");
 	}
 	
 	public static List<Result> getResults(List<Document> docs) {
@@ -48,6 +52,7 @@ public class Result {
 			logger.warn("Could not parse 'modified' field - it will be null");
 		}
 		this.path = (String)obj.get("path");
+		this.size = (String)obj.get("size");
 	}
 	
 	public static List<Result> getResultsFromArray(JSONArray searchResults) {

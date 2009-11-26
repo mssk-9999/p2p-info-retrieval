@@ -31,14 +31,11 @@ Ext.onReady(function(){
 	var resultTpl = new Ext.XTemplate(
 			'<tpl for=".">',
 			'<div class="search-item">',
-			'<h3><span>{modified:date("M j, Y")}</span>',
+//			'<h3><span>{modified:date("M j, Y")}</span>',
+			'<h3><span>{size}</span>',
 			'<a href="file://{path}" target="_blank">{path}</a></h3>',
 			'</div></tpl>'
 	);
-	
-//	function appendResults(results) {
-//		resultsPanel.get(0).get(0).getStore().loadData(results, true);
-//	}
 
 	function addTab(query) {
 		var callback = "appendResults";
@@ -58,6 +55,7 @@ Ext.onReady(function(){
 				root : '',
 				fields : [
 				          {name: 'path'},
+				          {name: 'size'},
 				          {name: 'modified'}
 				          ]
 			})
@@ -78,8 +76,7 @@ Ext.onReady(function(){
 				pageSize: 20,
 				displayInfo: true,
 				displayMsg: 'Results {0} - {1} of {2}',
-				emptyMsg: "No results to display",
-				plugins: new Ext.ux.grid.AutoRefresher()
+				emptyMsg: "No results to display"
 			})
 		});
 		resultsPanel.doLayout();
