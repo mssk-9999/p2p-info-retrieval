@@ -160,12 +160,14 @@ public class JTellaNode implements MessageReceiver {
 		List<Document> list = null;
 		
 		try {
-			JSONObject searchObj = (JSONObject)JSONValue.parse(criteria);
+			Object obj = JSONValue.parse(criteria);
+			JSONObject searchObj = (JSONObject)obj;
 			String sessionId = (String)searchObj.get("sessionId");
 			String searchStr = (String)searchObj.get("query");
 			try {
 				list = SearchFiles.doSimpleSearch(searchStr);
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.error("Exception performing search", e);
 			}
 
@@ -184,6 +186,7 @@ public class JTellaNode implements MessageReceiver {
 			resultsObj.put("searchResults", resultArr);
 			injectSearchReply(resultsObj.toJSONString(), String.valueOf(searchMessage.hashCode()));
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Exception in receiveSearch", e);
 		}
 		
@@ -194,14 +197,16 @@ public class JTellaNode implements MessageReceiver {
 	 */
 	public void receiveSearchReply(SearchReplyMessage searchReplyMessage) {
 		String output = "";//= searchReplyMessage..toString();
-		output = "Search Response from :"+searchReplyMessage.getIPAddress()+":\n" + output ;
-		for (int i =0;i<searchReplyMessage.getFileCount();i++){
-			output += searchReplyMessage.getFileRecord(i).getName() + "\n";
-		}
+//		output = "Search Response from :"+searchReplyMessage.getIPAddress()+":\n" + output ;
+//		for (int i =0;i<searchReplyMessage.getFileCount();i++){
+			output += searchReplyMessage.getFileRecord(0).getName();
+		
+		JSONObject reply = (JSONObject)JSONValue.parse(output);
+		reply.put("respondingIP", searchReplyMessage.getIPAddress());
 
 		
 		try {
-			p2p.info.retrieval.web.SearchFiles.receiveSearchReply(output);
+			p2p.info.retrieval.web.SearchFiles.receiveSearchReply(reply.toJSONString());
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
