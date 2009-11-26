@@ -3,11 +3,15 @@ package jtella.node;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Properties;
 
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.lucene.demo.SearchFiles;
@@ -31,24 +35,28 @@ import com.kenmccrary.jtella.SearchReplyMessage;
  */
 public class JTellaNode implements MessageReceiver {
 
+	private static final String defaultHostAddress = "localhost";
 	private static final int defaultListenPort = 6346;
-	//	private JTellaGUI gui;
 	private static final Logger logger = Logger.getLogger(JTellaNode.class);
+	private static final String LOG_PROPERTY_FILE = "com.dan.jtella.log4j.properties";
+	private static final String PROTOCOL_LOG_PROPERTY_FILE = "protocol.com.dan.jtella.log4j.properties";
 	private JTellaAdapter jta;
 
 
 	/** default constructor
+	 * @throws Exception 
 	 * 
 	 */
-	public JTellaNode() {
-		InetAddress address = null;
+	public JTellaNode() throws Exception {
+		InetAddress host = null;
+		String addr = defaultHostAddress;
 		try {
-			address = InetAddress.getLocalHost();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			host = InetAddress.getLocalHost();
+			addr = host.getHostAddress();
+		} catch (Exception e) {
+			logger.error("Problem getting host", e);
+			throw new Exception("Problem getting host - " + e.getMessage());
 		}
-		String addr = address.getHostAddress();
 
 		jta = JTellaAdapter.getInstance();
 		jta.setHost(addr);
@@ -64,28 +72,6 @@ public class JTellaNode implements MessageReceiver {
 		jta = JTellaAdapter.getInstance();
 		jta.setHost(IP);
 
-		//		gui = new JTellaGUI("The JTella GUI", this);
-
-
-		/* Instantiate an anonymous subclass of WindowAdapter, and register it
-		 * as the frame's WindowListener.
-		 * windowClosing() is invoked when the frame is in the process of being
-		 * closed to terminate the application.
-		 */
-		//		gui.addWindowListener(
-		//				new WindowAdapter() {
-		//					public void windowClosing(WindowEvent e) {
-		//						jta.shutdown();
-		//						System.exit(0);
-		//					}
-		//				}
-		//		);
-
-		// Size the window to fit the preferred size and layout of its
-		// subcomponents, then show the window.
-		//		gui.pack();
-		//		gui.setVisible(true);
-
 		//sign up to receive search messages
 		jta.addSearchListener(this);
 
@@ -93,7 +79,7 @@ public class JTellaNode implements MessageReceiver {
 	}
 
 
-	public JTellaNode(String indexPath) {
+	public JTellaNode(String indexPath) throws Exception {
 		this();
 		SearchFiles.setIndex(indexPath);
 	}
@@ -102,25 +88,34 @@ public class JTellaNode implements MessageReceiver {
 	 * @param args not used
 	 */
 	public static void main(String[] args) {
-		
-		
 
-		JTellaNode node = null;
-		if (args.length==0){ //nothing is provided : use default values
-			System.out.println("Usage: JTellaNode [indexPath] \n Using default values.");
-			node = new JTellaNode();	
-		}
+		try {
 
-		else if (args.length==1){
-			node = new JTellaNode(args[0]);
-		}
+			BasicConfigurator.configure();
+			Logger.getLogger("com.dan").setLevel(Level.WARN);
+			Logger.getLogger("protocol.com.dan").setLevel(Level.WARN);
+			Logger.getLogger("com.kenmccrary").setLevel(Level.WARN);
 
-//		else if (args.length==2){
-//			node = new JTellaNode(args[0], Integer.parseInt(args[1]));
-//		}
-		else {
-			System.out.println("Invalid number of arguments! \n Usage: JTellaNode [indexPath] \n Using default values.");
-			node = new JTellaNode();	
+			JTellaNode node = null;
+			if (args.length==0){ //nothing is provided : use default values
+				System.out.println("Usage: JTellaNode [indexPath] \n Using default values.");
+				node = new JTellaNode();	
+			}
+
+			else if (args.length==1){
+				node = new JTellaNode(args[0]);
+			}
+
+			//		else if (args.length==2){
+			//			node = new JTellaNode(args[0], Integer.parseInt(args[1]));
+			//		}
+			else {
+				System.out.println("Invalid number of arguments! \n Usage: JTellaNode [indexPath] \n Using default values.");
+				node = new JTellaNode();	
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
@@ -156,9 +151,9 @@ public class JTellaNode implements MessageReceiver {
 	public void receiveSearch(SearchMessage searchMessage) {
 		String criteria = searchMessage.getSearchCriteria();
 		System.out.println("Search: " + criteria);
-		
+
 		List<Document> list = null;
-		
+
 		try {
 			Object obj = JSONValue.parse(criteria);
 			JSONObject searchObj = (JSONObject)obj;
@@ -173,7 +168,7 @@ public class JTellaNode implements MessageReceiver {
 
 			JSONObject resultsObj = new JSONObject();
 			resultsObj.put("sessionId", sessionId);
-			
+
 			JSONArray resultArr = new JSONArray();
 			if (list != null) {
 				for(Document d : list) {
@@ -189,29 +184,24 @@ public class JTellaNode implements MessageReceiver {
 			e.printStackTrace();
 			logger.error("Exception in receiveSearch", e);
 		}
-		
+
 	}
 
 	/**
 	 * 
 	 */
 	public void receiveSearchReply(SearchReplyMessage searchReplyMessage) {
-		String output = "";//= searchReplyMessage..toString();
-//		output = "Search Response from :"+searchReplyMessage.getIPAddress()+":\n" + output ;
-//		for (int i =0;i<searchReplyMessage.getFileCount();i++){
-			output += searchReplyMessage.getFileRecord(0).getName();
-		
+		String output = "";
+		output += searchReplyMessage.getFileRecord(0).getName();
+
 		JSONObject reply = (JSONObject)JSONValue.parse(output);
 		reply.put("respondingIP", searchReplyMessage.getIPAddress());
 
-		
 		try {
 			p2p.info.retrieval.web.SearchFiles.receiveSearchReply(reply.toJSONString());
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-
-		//		gui.callBack(output);
 	}
 
 	public GNUTellaConnection getConnection() {
