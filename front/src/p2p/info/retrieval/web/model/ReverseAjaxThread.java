@@ -1,6 +1,7 @@
 package p2p.info.retrieval.web.model;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.directwebremoting.ScriptSession;
@@ -19,24 +20,16 @@ public class ReverseAjaxThread extends Thread {
 	}
 
 	public void run() {
-		while (true) {
-			for (ScriptSession scriptSession : scriptSessions) {
-				if (!scriptSession.isInvalidated()) {
-					// alert('hello')
-					new ScriptProxy(scriptSession).addFunctionCall("alert", "hello");
-				} else {
-					synchronized (this) {
-						scriptSessions.remove(scriptSession);
-					}
+		for (ScriptSession scriptSession : scriptSessions) {
+			if (!scriptSession.isInvalidated()) {
+				String callback = (String) scriptSession.getAttribute("callback");
+				List<Result> data = (List<Result>) scriptSession.getAttribute("results");
+				new ScriptProxy(scriptSession).addFunctionCall(callback, data);
+			} else {
+				synchronized (this) {
+					scriptSessions.remove(scriptSession);
 				}
 			}
-			try {
-				// sleep for 10 seconds
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
 		}
 	}
 

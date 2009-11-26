@@ -1,22 +1,25 @@
 Ext.onReady(function(){
-	
-	// Activate reverse ajax in dwr
-	dwr.engine.setActiveReverseAjax(true);
-	
+
+	var reverseAjaxInitialized = false;
 	var searchField = new p2p.ux.form.SearchField({
 		fieldLabel: 'Search',
 		anchor: '100%',
 		onTrigger2Click : function(){
 			var v = this.getRawValue();
-	        if(v.length < 1){
-	            this.onTrigger1Click();
-	            return;
-	        }
-	        var tab = addTab(v);
-	        tab.get(0).getStore().load();
+			if(v.length < 1){
+				this.onTrigger1Click();
+				return;
+			}
+			var tab = addTab(v);
+			// Activate reverse ajax in dwr
+			if(!reverseAjaxInitialized) {
+				dwr.engine.setActiveReverseAjax(true);
+				reverseAjaxInitialized = true;
+			}
+			tab.get(0).getStore().load();
 		}
 	});
-	
+
 	var form = new Ext.FormPanel({
 		renderTo: 'search',
 		border: false,
@@ -33,30 +36,34 @@ Ext.onReady(function(){
 			'</div></tpl>'
 	);
 	
+//	function appendResults(results) {
+//		resultsPanel.get(0).get(0).getStore().loadData(results, true);
+//	}
+
 	function addTab(query) {
-		
+		var callback = "appendResults";
 		var ds = new Ext.data.Store({
 			proxy: new Ext.ux.data.DwrProxy({
 				apiActionToHandlerMap : {
 					read : {
 						dwrFunction : SearchFiles.getResults,
 						getDwrArgsFunction : function(trans) {
-							return [
-								query
-							];
+							return [query, callback];
 						}
 					}
 				}
 			}),
 			reader: new Ext.data.JsonReader({
-				root : 'objectsToConvertToRecords',
+//				root : 'objectsToConvertToRecords',
+				root : '',
 				fields : [
-					{name: 'path'},
-					{name: 'modified'}
-				]
+				          {name: 'path'},
+				          {name: 'modified'}
+				          ]
 			})
+			
 		});
-		
+
 		var tab = resultsPanel.add({
 			title: query,
 			closable: true,
@@ -67,13 +74,13 @@ Ext.onReady(function(){
 				itemSelector: 'div.search-item'
 			}),
 			bbar: new Ext.PagingToolbar({
-	            store: ds,
-	            pageSize: 20,
-	            displayInfo: true,
-	            displayMsg: 'Results {0} - {1} of {2}',
-	            emptyMsg: "No results to display",
-	            plugins: new Ext.ux.grid.AutoRefresher()
-	        })
+				store: ds,
+				pageSize: 20,
+				displayInfo: true,
+				displayMsg: 'Results {0} - {1} of {2}',
+				emptyMsg: "No results to display",
+				plugins: new Ext.ux.grid.AutoRefresher()
+			})
 		});
 		resultsPanel.doLayout();
 		tab.show();
@@ -81,6 +88,7 @@ Ext.onReady(function(){
 	}
 
 	var resultsPanel = new Ext.TabPanel({
+		id: 'resultsPanel',
 		renderTo: 'search-results',
 		resizeTabs:true, // turn on tab resizing
 		minTabWidth: 115,
@@ -92,4 +100,8 @@ Ext.onReady(function(){
 		defaults: {autoScroll:true},
 		plugins: new Ext.ux.TabCloseMenu()
 	});
+	
+	appendResults = function (results) {
+		resultsPanel.get(0).get(0).getStore().loadData(results, true);
+	}
 });
