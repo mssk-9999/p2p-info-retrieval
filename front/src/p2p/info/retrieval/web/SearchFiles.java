@@ -13,13 +13,9 @@ import org.directwebremoting.WebContextFactory;
 import org.directwebremoting.annotations.RemoteMethod;
 import org.directwebremoting.annotations.RemoteProxy;
 import org.directwebremoting.extend.ScriptSessionManager;
-import org.directwebremoting.json.JsonUtil;
-import org.directwebremoting.json.parse.JsonDecoder;
-import org.directwebremoting.json.parse.JsonParser;
-import org.directwebremoting.json.parse.JsonParserFactory;
-import org.directwebremoting.json.types.JsonArray;
-import org.directwebremoting.json.types.JsonObject;
-import org.directwebremoting.json.types.JsonString;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import p2p.info.retrieval.web.model.JsonReaderResponse;
 import p2p.info.retrieval.web.model.Result;
@@ -65,12 +61,12 @@ public class SearchFiles {
 				sessions.put(sessionId, existingSession);
 			}
 
-			JsonObject jsonQuery = new JsonObject();
-			jsonQuery.put("sessionId", new JsonString(sessionId));
-			jsonQuery.put("query", new JsonString(query.trim()));
+			JSONObject jsonQuery = new JSONObject();
+			jsonQuery.put("sessionId", sessionId);
+			jsonQuery.put("query", query.trim());
 
 			// Propagate to other nodes
-			org.apache.lucene.demo.SearchFiles.propagateSearch(jsonQuery.toExternalRepresentation());
+			org.apache.lucene.demo.SearchFiles.propagateSearch(jsonQuery.toJSONString());
 
 			return new JsonReaderResponse<Result>(results);
 		} catch (Exception e) {
@@ -109,15 +105,15 @@ public class SearchFiles {
 		logger.info("Result: " + line);
 
 		try {
-			JsonObject obj = new JsonString(line).getJsonObject();
+			JSONObject obj = (JSONObject)JSONValue.parse(line);
 
-			JsonArray searchResults = obj.get("searchResults").getJsonArray();
+			JSONArray searchResults = (JSONArray)obj.get("searchResults");
 			List<Result> newResults = Result.getResultsFromArray(searchResults);
 
 			Container container = ServerContextFactory.get().getContainer();
 			ScriptSessionManager manager = container.getBean(ScriptSessionManager.class);
 
-			String sessionId = obj.get("sessionId").getString();
+			String sessionId = (String)obj.get("sessionId");
 			ScriptSession session = manager.getScriptSession(sessionId, null, null);
 
 			//TODO: add data to return
