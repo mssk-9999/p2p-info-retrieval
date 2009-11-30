@@ -1,26 +1,33 @@
 package p2p.info.retrieval.web.util;
 
-public class SizeConverter {
-	
+import java.text.DecimalFormat;
+
+public class SizeFormatter {
+
 	private static final long KILOBYTE = 1024L;
 	private static final long MEGABYTE = KILOBYTE * 1024L;
 	private static final long GIGABYTE = MEGABYTE * 1024L;
 	private static final long TERABYTE = GIGABYTE * 1024L;
-	
-	public static String convert (long bytes) {
+
+	public static String format(long bytes) {
 		String size;
-		
+
 		if(bytes < KILOBYTE)
 			size = bytes + " B";
 		else if(bytes >= KILOBYTE && bytes < MEGABYTE)
-			size = bytes/KILOBYTE + " KB";
+			size = roundTwoDecimals(bytes/KILOBYTE) + " KB";
 		else if(bytes >= MEGABYTE && bytes < GIGABYTE)
-			size = bytes/MEGABYTE + " MB";
+			size = roundTwoDecimals(bytes/MEGABYTE) + " MB";
 		else if(bytes >= GIGABYTE && bytes < TERABYTE)
-			size = bytes/GIGABYTE + " GB";
+			size = roundTwoDecimals(bytes/GIGABYTE) + " GB";
 		else
-			size = bytes/TERABYTE + " TB";
+			size = roundTwoDecimals(bytes/TERABYTE) + " TB";
 		return size;
+	}
+
+	private static long roundTwoDecimals(long d) {
+		DecimalFormat twoDForm = new DecimalFormat("#.##");
+		return Long.valueOf(twoDForm.format(d));
 	}
 
 }

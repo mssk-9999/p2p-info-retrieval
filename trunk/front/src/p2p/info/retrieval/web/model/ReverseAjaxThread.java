@@ -23,8 +23,9 @@ public class ReverseAjaxThread extends Thread {
 		for (ScriptSession scriptSession : scriptSessions) {
 			if (!scriptSession.isInvalidated()) {
 				String callback = (String) scriptSession.getAttribute("callback");
+				String storeId = (String) scriptSession.getAttribute("storeId");
 				List<Result> data = (List<Result>) scriptSession.getAttribute("results");
-				new ScriptProxy(scriptSession).addFunctionCall(callback, data);
+				new ScriptProxy(scriptSession).addFunctionCall(callback, storeId, data);
 			} else {
 				synchronized (this) {
 					scriptSessions.remove(scriptSession);

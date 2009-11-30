@@ -1,6 +1,8 @@
 Ext.onReady(function(){
 
-	var reverseAjaxInitialized = false;
+	dwr.engine.setActiveReverseAjax(true);
+	dwr.engine.setNotifyServerOnPageUnload(true);
+	
 	var searchField = new p2p.ux.form.SearchField({
 		fieldLabel: 'Search',
 		anchor: '100%',
@@ -10,13 +12,8 @@ Ext.onReady(function(){
 				this.onTrigger1Click();
 				return;
 			}
-			var tab = addTab(v);
-			// Activate reverse ajax in dwr
-			if(!reverseAjaxInitialized) {
-				dwr.engine.setActiveReverseAjax(true);
-				reverseAjaxInitialized = true;
-			}
-			tab.get(0).getStore().load();
+			var storeId = addTab(v);
+			Ext.StoreMgr.lookup(storeId).proxy.doRequest("read");
 		}
 	});
 
@@ -32,21 +29,25 @@ Ext.onReady(function(){
 			'<tpl for=".">',
 			'<div class="search-item">',
 //			'<h3><span>{modified:date("M j, Y")}</span>',
-			'<h3><span>{size}</span>',
+			'<h3><span>{respondingIP} :: {size}</span>',
 			'<a href="file://{path}" target="_blank">{path}</a></h3>',
 			'</div></tpl>'
 	);
 
 	function addTab(query) {
 		var callback = "appendResults";
+		var storeId = Ext.id();
 		var ds = new Ext.data.Store({
+			storeId: storeId,
 			proxy: new Ext.ux.data.DwrProxy({
 				apiActionToHandlerMap : {
 					read : {
 						dwrFunction : SearchFiles.getResults,
-						getDwrArgsFunction : function(trans) {
-							return [query, callback];
-						}
+						getDwrArgsFunction : function(request) {
+							request.callback = Ext.emptyFn;
+							return [query, storeId, callback];
+						},
+						getDwrArgsScope : this
 					}
 				}
 			}),
@@ -56,7 +57,8 @@ Ext.onReady(function(){
 				fields : [
 				          {name: 'path'},
 				          {name: 'size'},
-				          {name: 'modified'}
+				          {name: 'modified'},
+				          {name: 'respondingIP'}
 				          ]
 			})
 			
@@ -81,7 +83,7 @@ Ext.onReady(function(){
 		});
 		resultsPanel.doLayout();
 		tab.show();
-		return tab;
+		return storeId;
 	}
 
 	var resultsPanel = new Ext.TabPanel({
@@ -98,7 +100,7 @@ Ext.onReady(function(){
 		plugins: new Ext.ux.TabCloseMenu()
 	});
 	
-	appendResults = function (results) {
-		resultsPanel.get(0).get(0).getStore().loadData(results, true);
-	}
+	appendResults = function (storeId, results) {
+		Ext.StoreMgr.lookup(storeId).loadData(results, true);
+	};
 });
