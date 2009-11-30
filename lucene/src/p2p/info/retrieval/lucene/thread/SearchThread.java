@@ -21,11 +21,11 @@ import org.apache.lucene.util.Version;
 
 import p2p.info.retrieval.lucene.util.QueryBuilder;
 
-public class ServiceThread implements Runnable {
+public class SearchThread implements Runnable {
 
 	protected Socket clientSocket = null;
 
-	public ServiceThread(Socket clientSocket) {
+	public SearchThread(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 	}
 
