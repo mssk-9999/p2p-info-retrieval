@@ -2,26 +2,21 @@ package p2p.info.retrieval.lucene;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Date;
 
-import org.apache.lucene.search.Query;
+import p2p.info.retrieval.lucene.thread.SearchThread;
 
-import p2p.info.retrieval.lucene.thread.ServiceThread;
-
-public class Service implements Runnable{
+public class OldSearchService implements Runnable{
 
 	protected int          serverPort   = 8080;
 	protected ServerSocket serverSocket = null;
 	protected boolean      isStopped    = false;
 	protected Thread       runningThread= null;
 
-	protected static Service server = null;
+	protected static OldSearchService server = null;
 
-	public Service(int port){
+	public OldSearchService(int port){
 		this.serverPort = port;
 	}
 
@@ -41,7 +36,7 @@ public class Service implements Runnable{
 				}
 				throw new RuntimeException("Error accepting client connection", e);
 			}
-			new Thread(new ServiceThread(clientSocket)).start();
+			new Thread(new SearchThread(clientSocket)).start();
 		}
 		System.out.println("Server Stopped.") ;
 	}
@@ -72,11 +67,11 @@ public class Service implements Runnable{
 	//Create a new Server and Run it.
 	public static void main(String[] args){
 
-		BufferedReader in;
+//		BufferedReader in;
 
 		System.out.println("Service Started");
 
-		server = new Service(8080);
+		server = new OldSearchService(8080);
 		new Thread(server).start();
 
 //		try {

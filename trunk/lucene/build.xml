@@ -28,7 +28,7 @@
 	
 	
   <property name="core.name" value="lucene-core-${version}"/>
-  <property name="demo.name" value="M:/workspace/front/WebContent/WEB-INF/lib/lucene-demos-${version}"/>
+  <property name="demo.name" value="/users/Steve/workspace/front/WebContent/WEB-INF/lib/lucene-demos-${version}"/>
   <property name="demo.war.name" value="luceneweb"/>
 
   <property name="manifest.file" location="${build.dir}/MANIFEST.MF"/>
@@ -63,7 +63,7 @@
   <!--                                                                    -->
   <!-- ================================================================== -->
 
-  <target name="jar-all" depends="compile-all"
+  <target name="jar-all" depends="clean, compile-all"
 	description="Build jar file">
 	<sequential>
   	  <build-manifest/>
@@ -109,7 +109,8 @@
 
     <compile
       srcdir="src"
-      destdir="${build.dir}/classes">
+      destdir="${build.dir}/classes"
+      excludes="**/tests/*.java">
       <classpath refid="all.classpath"/>
     </compile>
   </target>
@@ -212,6 +213,7 @@
   <macrodef name="compile">
     <attribute name="srcdir"/>
     <attribute name="destdir"/>
+  	<attribute name="excludes"/>
     <element name="nested" implicit="yes" optional="yes"/>
 
     <sequential>
@@ -219,6 +221,7 @@
       <javac
         srcdir="@{srcdir}"
         destdir="@{destdir}"
+      	excludes="@{excludes}"
         deprecation="off"
         debug="on"
         source="${javac.source}"

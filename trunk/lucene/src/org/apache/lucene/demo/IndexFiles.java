@@ -43,7 +43,12 @@ public class IndexFiles {
     }
 
     if (INDEX_DIR.exists()) {
-      System.out.println("Cannot save index to '" +INDEX_DIR+ "' directory, please delete it first");
+      try {
+		System.out.println("Cannot save index to '" +INDEX_DIR.getCanonicalPath()+ "' directory, please delete it first");
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
       System.exit(1);
     }
     

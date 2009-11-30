@@ -6,6 +6,12 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jtella"/>
 	<classpathentry kind="lib" path="/front/WebContent/WEB-INF/lib/json_simple-1.1.jar"/>
 	<classpathentry kind="lib" path="/front/WebContent/WEB-INF/lib/log4j-1.2.14.jar"/>
-	<classpathentry kind="lib" path="lucene-core-2.9.0.jar"/>
+	<classpathentry kind="lib" path="lucene-core-2.9.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://lucene.apache.org/java/2_9_0/api/core/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/polyester/lib/polyester.jar" sourcepath="/polyester"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
