@@ -95,6 +95,7 @@ public class JTellaNode implements MessageReceiver {
 			Logger.getLogger("com.dan").setLevel(Level.WARN);
 			Logger.getLogger("protocol.com.dan").setLevel(Level.WARN);
 			Logger.getLogger("com.kenmccrary").setLevel(Level.WARN);
+			//			Logger.getLogger("org.apache.lucene").setLevel(Level.INFO);
 
 			JTellaNode node = null;
 			if (args.length==0){ //nothing is provided : use default values
@@ -191,14 +192,28 @@ public class JTellaNode implements MessageReceiver {
 	/**
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	public void receiveSearchReply(SearchReplyMessage searchReplyMessage) {
 		String output = "";
-		output += searchReplyMessage.getFileRecord(0).getName();
 
-		JSONObject reply = (JSONObject)JSONValue.parse(output);
-		reply.put("respondingIP", searchReplyMessage.getIPAddress());
+		try{
+			output += searchReplyMessage.getFileRecord(0).getName();
 
-		try {
+			String respondingIP = searchReplyMessage.getIPAddress();
+
+			JSONObject reply = (JSONObject)JSONValue.parse(output);
+			JSONArray results = (JSONArray)reply.get("searchResults");
+
+			JSONArray tempArray = new JSONArray();
+			
+			for(Object obj: results) {
+				JSONObject result = (JSONObject)obj;
+				result.put("respondingIP", respondingIP);
+				tempArray.add(result);
+			}
+			
+			reply.put("searchResults", tempArray);
+
 			p2p.info.retrieval.web.SearchFiles.receiveSearchReply(reply.toJSONString());
 		} catch (Exception e) {
 			logger.error(e.getMessage());
