@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="/front/WebContent/WEB-INF/lib/log4j-1.2.14.jar"/>
 	<classpathentry kind="lib" path="/front/WebContent/WEB-INF/lib/lucene-core-2.9.0.jar"/>
 	<classpathentry kind="lib" path="/polyester/lib/polyester.jar" sourcepath="/polyester"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
