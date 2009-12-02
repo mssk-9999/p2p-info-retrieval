@@ -1,4 +1,4 @@
-package jtella.node;
+package jtella.node.util;
 
 import polyester.TupleFactory;
 import lights.interfaces.ITuple;
