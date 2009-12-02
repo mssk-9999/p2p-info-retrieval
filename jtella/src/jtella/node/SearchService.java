@@ -3,6 +3,8 @@ package jtella.node;
 import java.net.InetAddress;
 import java.util.List;
 
+import jtella.node.util.JTellaTupleFactory;
+
 import lights.Field;
 import lights.Tuple;
 import lights.interfaces.ITuple;
