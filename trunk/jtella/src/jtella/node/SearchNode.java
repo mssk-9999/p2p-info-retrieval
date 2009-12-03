@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -45,13 +46,15 @@ public class SearchNode {
 
 	private static List<Worker> threads = new ArrayList<Worker>();
 
+	private static ITupleSpace tupleSpace;
+
 	public static void main(String[] args) {
 		try {
 			// Set up the logging
 			BasicConfigurator.configure();
 			Logger.getLogger("com.kenmccrary.jtella").setLevel(Level.WARN);
 
-			ITupleSpace tupleSpace = new FastTupleSpace();
+			tupleSpace = new FastTupleSpace();
 			SearchService searchService = new SearchService(tupleSpace);
 			threads.add(searchService);
 
@@ -135,14 +138,14 @@ public class SearchNode {
 				i.remove();
 				// The key indexes into the selector so you
 				// can retrieve the socket that's ready for I/O
-				ServerSocketChannel nextReady = 
-					(ServerSocketChannel)sk.channel();
+				ServerSocketChannel nextReady = (ServerSocketChannel)sk.channel();
 				// Accept the date request and send back the date string
 				Socket s = nextReady.accept().socket();
 				// Write the current time to the socket
 				BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
 				String msg = getMessage(in);
 				ITuple t = createTuple(msg);
+				tupleSpace.out(t);
 //				PrintWriter out = new PrintWriter(s.getOutputStream(), true);
 //				Date now = new Date();
 //				out.println(now);
@@ -151,6 +154,11 @@ public class SearchNode {
 		}
 	}
 	
+	/**
+	 * Retrieve the message from the input buffer
+	 * @param in
+	 * @return
+	 */
 	private static String getMessage(BufferedReader in) {
 		String msg = "", line;
 		try {
@@ -162,6 +170,12 @@ public class SearchNode {
 		return msg;
 	}
 	
+	/**
+	 * Create either a search or reply tuple depending on the message type
+	 * @param msg
+	 * @return
+	 * @throws Exception
+	 */
 	private static ITuple createTuple(String msg) throws Exception {
 		JSONObject jsonObj = (JSONObject) JSONValue.parse(msg);
 		

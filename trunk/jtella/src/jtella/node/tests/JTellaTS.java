@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -80,7 +81,8 @@ public class JTellaTS extends TestCase {
 		BufferedReader in = null;
 
 		try {
-			serverSocket = new Socket("localhost", 8085);
+			InetAddress lh = InetAddress.getLocalHost();
+			serverSocket = new Socket(lh, 8085);
 			out = new PrintWriter(serverSocket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(
 					serverSocket.getInputStream()));
@@ -90,6 +92,7 @@ public class JTellaTS extends TestCase {
 		} catch (IOException e) {
 			System.err.println("Couldn't get I/O for "
 					+ "the connection to: localhost.");
+			e.printStackTrace();
 			System.exit(1);
 		}
 
