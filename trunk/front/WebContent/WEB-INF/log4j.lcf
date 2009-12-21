@@ -6,6 +6,7 @@ log4j.logger.org.directwebremoting=WARN
 
 # Set custom logger levels
 log4j.logger.p2p.info.retrieval=TRACE
+log4j.logger.jtella.node=DEBUG
 log4j.logger.org.apache.lucene.demo=TRACE
 
 # A1 is set to be a ConsoleAppender.
