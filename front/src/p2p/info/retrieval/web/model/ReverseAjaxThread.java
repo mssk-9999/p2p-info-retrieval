@@ -10,6 +10,7 @@ import org.directwebremoting.proxy.ScriptProxy;
 public class ReverseAjaxThread extends Thread {
 	private static ReverseAjaxThread INSTANCE;
 	private Set<ScriptSession> scriptSessions = new HashSet<ScriptSession>();
+	private boolean canExecute = false;
 
 	public static synchronized ReverseAjaxThread getInstance() {
 		if (INSTANCE == null) {
@@ -20,15 +21,23 @@ public class ReverseAjaxThread extends Thread {
 	}
 
 	public void run() {
-		for (ScriptSession scriptSession : scriptSessions) {
-			if (!scriptSession.isInvalidated()) {
-				String callback = (String) scriptSession.getAttribute("callback");
-				String storeId = (String) scriptSession.getAttribute("storeId");
-				List<Result> data = (List<Result>) scriptSession.getAttribute("results");
-				new ScriptProxy(scriptSession).addFunctionCall(callback, storeId, data);
-			} else {
-				synchronized (this) {
-					scriptSessions.remove(scriptSession);
+		while(true) {
+			synchronized(this){
+				while(!canExecute) {
+					try { wait(); } catch (InterruptedException e) {}
+				}
+				canExecute = false;
+			}
+			for (ScriptSession scriptSession : scriptSessions) {
+				if (!scriptSession.isInvalidated()) {
+					String callback = (String) scriptSession.getAttribute("callback");
+					String storeId = (String) scriptSession.getAttribute("storeId");
+					List<Result> data = (List<Result>) scriptSession.getAttribute("results");
+					new ScriptProxy(scriptSession).addFunctionCall(callback, storeId, data);
+				} else {
+					synchronized (this) {
+						scriptSessions.remove(scriptSession);
+					}
 				}
 			}
 		}
@@ -37,8 +46,13 @@ public class ReverseAjaxThread extends Thread {
 	public synchronized void addScriptSession(ScriptSession scriptSession) {
 		// use a copy so that code reading from scriptSessions does not need to be synchronized
 		Set<ScriptSession> scriptSessionsCopy = new HashSet<ScriptSession>(scriptSessions);
+		scriptSessionsCopy.remove(scriptSession);
 		scriptSessionsCopy.add(scriptSession);
 		scriptSessions = scriptSessionsCopy;
+		synchronized(this){
+			canExecute = true;
+			notify();
+		}
 	}
 
 }
