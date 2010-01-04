@@ -1,0 +1,15 @@
+#summary This page displays links for the 3rd party technologies used in this project
+#labels Featured,Phase-Support,Phase-Design,Phase-Requirements,Phase-Implementation
+
+= Third Party Technologies =
+
+== Introduction ==
+
+Following is a list of third party technologies used in this project. These technologies include libraries, standards, and tools.
+
+== Links ==
+
+ * [http://www.directwebremoting.com DWR]
+ * [http://json.org JSON]
+ * [http://sourceforge.net/projects/polyester Polyester]
+ * [http://logging.apache.org/log4j/1.2/index.html Log4J]
