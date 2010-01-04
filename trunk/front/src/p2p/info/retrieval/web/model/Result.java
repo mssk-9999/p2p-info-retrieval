@@ -54,25 +54,26 @@ public class Result {
 		return respondingIP;
 	}
 
-	public Result(Document doc) {
-		this.modified = doc.get("modified");
-		this.path = doc.get("path");
-		this.size = doc.get("size");
-		this.respondingIP = "127.0.0.0";
-	}
-
-	public static List<Result> getResults(List<Document> docs) {
-		List<Result> results = new ArrayList<Result>(docs.size());
-		for(Document doc: docs)
-			results.add(new Result(doc));
-		return results;
-	}
+//	public Result(Document doc) {
+//		this.modified = doc.get("modified");
+//		this.path = doc.get("path");
+//		this.size = doc.get("size");
+//		this.respondingIP = "127.0.0.0";
+//	}
+//
+//	public static List<Result> getResults(List<Document> docs) {
+//		List<Result> results = new ArrayList<Result>(docs.size());
+//		for(Document doc: docs)
+//			results.add(new Result(doc));
+//		return results;
+//	}
 
 	private Result(JSONObject obj) {
-		this.modified = (String)obj.get("modified");
-		this.path = (String)obj.get("path");
-		this.size = (String)obj.get("size");
-		this.respondingIP = (String)obj.get("respondingIP");
+		modified = (String)obj.get("modified");
+		path = (String)obj.get("path");
+		size = (String)obj.get("size");
+		String tmpIP;
+		respondingIP = (tmpIP = (String)obj.get("respondingIP")) != null ? tmpIP : "127.0.0.1";
 	}
 
 	public static List<Result> getResultsFromArray(JSONArray searchResults) {
