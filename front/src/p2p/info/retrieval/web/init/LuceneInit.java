@@ -80,6 +80,8 @@ public class LuceneInit extends HttpServlet {
 
 				File index = new File(indexPath);
 				manager = new IndexManager(index);
+				
+				SearchIndex.initNode();
 
 				if(!index.exists()) {
 					logger.info("Creating index of " + index.getAbsolutePath());

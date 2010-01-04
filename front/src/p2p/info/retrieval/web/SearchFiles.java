@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jtella.node.JTellaNode;
+
 import org.apache.log4j.Logger;
 import org.directwebremoting.ScriptSession;
 import org.directwebremoting.WebContextFactory;
@@ -49,8 +51,8 @@ public class SearchFiles {
 			jsonQuery.put("sessionId", sessionId);
 			jsonQuery.put("query", query.trim());
 
-			// Propagate to other nodes
-			SearchIndex.propagateSearch(jsonQuery.toJSONString());
+			// Search locally
+			SearchIndex.doLocalSearch(jsonQuery.toJSONString());
 			
 		} catch (Exception e) {
 			logger.error("Exception in getResults - ", e);
