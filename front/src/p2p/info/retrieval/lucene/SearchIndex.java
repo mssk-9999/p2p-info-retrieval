@@ -51,7 +51,9 @@ public class SearchIndex {
 	private static JTellaNode node = null;
 	private static File index = new File("index");
 	private static final Logger logger = Logger.getLogger(SearchIndex.class);
+	private static final int HITS_PER_PAGE = 10;
 
+	// TODO: Remove this in favor of the gnutella service 
 	public static void initNode() {
 		try{
 			if(node == null)
@@ -101,8 +103,6 @@ public class SearchIndex {
 
 	public static List<Document> doSimpleSearch(String line) throws Exception {
 		String field = "contents";
-		int hitsPerPage = 10;
-
 		IndexReader reader;
 		try{
 			reader = IndexReader.open(FSDirectory.open(index), true); // only searching, so read-only=true
@@ -116,7 +116,7 @@ public class SearchIndex {
 		Query query = parser.parse(line);
 
 		// Collect enough docs to show 1 pages
-		TopScoreDocCollector collector = TopScoreDocCollector.create(1 * hitsPerPage, false);
+		TopScoreDocCollector collector = TopScoreDocCollector.create(HITS_PER_PAGE, false);
 		searcher.search(query, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
@@ -124,7 +124,10 @@ public class SearchIndex {
 		for(int i = 0; i < hits.length; i++) {
 			Document doc = searcher.doc(hits[i].doc);
 			docs.add(doc);
-		}	  
+		}
+		
+		reader.close();
+		searcher.close();
 
 		return docs;
 	}
