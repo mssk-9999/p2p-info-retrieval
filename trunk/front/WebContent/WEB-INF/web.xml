@@ -43,10 +43,19 @@
 		<servlet-class>p2p.info.retrieval.web.shutdown.JTellaNodeShutdown</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<servlet>
+		<servlet-name>File Server</servlet-name>
+		<servlet-class>p2p.info.retrieval.web.FileServer</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>DWR controller servlet</servlet-name>
 		<url-pattern>/dwr/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>File Server</servlet-name>
+		<url-pattern>/files/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>

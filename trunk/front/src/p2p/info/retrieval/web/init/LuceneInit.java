@@ -141,14 +141,19 @@ public class LuceneInit extends HttpServlet {
 	    out.close();
 	}
 
-	
+
 	private void moveJNotifyLib() throws IOException {
 		String libs = getServletContext().getRealPath("/WEB-INF/lib");
 		File JNotifyLibSrc = new File(libs+"/jnotify.dll");
 		File JNotifyLibDest = new File("jnotify.dll");
-		
-		logger.info("Copying file \"" + JNotifyLibSrc.getAbsolutePath() + "\" to \"" + JNotifyLibDest.getAbsolutePath() + "\"");
-		copy(JNotifyLibSrc, JNotifyLibDest);
+		if(!JNotifyLibDest.exists()) {
+			logger.info("Copying file \"" + JNotifyLibSrc.getAbsolutePath() + "\" to \"" + JNotifyLibDest.getAbsolutePath() + "\"");
+			try {
+				copy(JNotifyLibSrc, JNotifyLibDest);
+			} catch(IOException e) {
+				logger.warn("Could not copy file " + JNotifyLibSrc.getAbsolutePath(), e);
+			}
+		}
 	}
 	
 	private void loadJNotifyLibPath() throws Exception {
@@ -184,7 +189,7 @@ public class LuceneInit extends HttpServlet {
 	private void initDirWatcher() throws Exception {
 		
 		// Move the native library to a safer location
-		moveJNotifyLib();
+//		moveJNotifyLib();
 		
 		// Load the JNotify native library
 //		loadJNotifyLibPath();
@@ -256,6 +261,8 @@ public class LuceneInit extends HttpServlet {
 		}
 	}
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res) {}
+	
+	
+	
 
 }
