@@ -2,7 +2,10 @@ package p2p.info.retrieval.web.init;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
@@ -37,11 +40,31 @@ public class LuceneInit extends HttpServlet {
 		try {
 			initLogger();
 			initIndexer();
+			initGnutella();
 			initDirWatcher();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void initGnutella() {
+
+		// Create gwebcaches.list if it does not already exist
+		try {
+		    File file = new File("gwebcaches.list");
+
+		    // Create file if it does not exist
+		    boolean success = file.createNewFile();
+		    if (success) {
+		        logger.info("Created gwebcaches.list in directory - " + file.getAbsolutePath());
+		    } else {
+		    	logger.info("Using existing gwebcaches.list in directory - " + file.getAbsolutePath());
+		    }
+		} catch (IOException e) {
+		}
+
+		SearchIndex.initNode();
 	}
 
 	public void destroy() {
@@ -80,8 +103,6 @@ public class LuceneInit extends HttpServlet {
 
 				File index = new File(indexPath);
 				manager = new IndexManager(index);
-				
-				SearchIndex.initNode();
 
 				if(!index.exists()) {
 					logger.info("Creating index of " + index.getAbsolutePath());
@@ -104,6 +125,32 @@ public class LuceneInit extends HttpServlet {
 		}
 	}
 	
+	// Copies src file to dst file.
+	// If the dst file does not exist, it is created
+	void copy(File src, File dst) throws IOException {
+	    InputStream in = new FileInputStream(src);
+	    OutputStream out = new FileOutputStream(dst);
+
+	    // Transfer bytes from in to out
+	    byte[] buf = new byte[1024];
+	    int len;
+	    while ((len = in.read(buf)) > 0) {
+	        out.write(buf, 0, len);
+	    }
+	    in.close();
+	    out.close();
+	}
+
+	
+	private void moveJNotifyLib() throws IOException {
+		String libs = getServletContext().getRealPath("/WEB-INF/lib");
+		File JNotifyLibSrc = new File(libs+"/jnotify.dll");
+		File JNotifyLibDest = new File("jnotify.dll");
+		
+		logger.info("Copying file \"" + JNotifyLibSrc.getAbsolutePath() + "\" to \"" + JNotifyLibDest.getAbsolutePath() + "\"");
+		copy(JNotifyLibSrc, JNotifyLibDest);
+	}
+	
 	private void loadJNotifyLibPath() throws Exception {
 		// Reset the "sys_paths" field of the ClassLoader to null.
 		Class clazz = ClassLoader.class;
@@ -116,7 +163,8 @@ public class LuceneInit extends HttpServlet {
 		field.set(clazz, null);
 		try {
 			// Change the value and load the library.
-			String libs = getServletContext().getRealPath("/WEB-INF/lib");
+//			String libs = getServletContext().getRealPath("/WEB-INF/lib");
+			String libs = "/";
 			logger.debug("Loading JNotify native library from path - " + libs);
 			System.setProperty("java.library.path", libs);
 			System.loadLibrary("jnotify");
@@ -134,7 +182,13 @@ public class LuceneInit extends HttpServlet {
 	}
 
 	private void initDirWatcher() throws Exception {
-		loadJNotifyLibPath();
+		
+		// Move the native library to a safer location
+		moveJNotifyLib();
+		
+		// Load the JNotify native library
+//		loadJNotifyLibPath();
+		
 		int mask =  JNotify.FILE_CREATED | 
 		JNotify.FILE_DELETED | 
 		JNotify.FILE_MODIFIED| 
