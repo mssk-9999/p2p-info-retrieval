@@ -56,7 +56,7 @@ public class FileServer extends HttpServlet {
 			//set response headers
 			res.setContentType("text/plain");
 			res.addHeader("Content-Disposition", "attachment; filename="
-					+ fileName);
+					+ file.getName());
 			res.setContentLength(fileSize.intValue());
 			fstream = new FileInputStream(file);
 			buf = new BufferedInputStream(fstream);
