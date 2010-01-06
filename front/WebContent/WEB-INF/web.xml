@@ -55,7 +55,7 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>File Server</servlet-name>
-		<url-pattern>/files/*</url-pattern>
+		<url-pattern>/getFile</url-pattern>
 	</servlet-mapping>
 
 </web-app>

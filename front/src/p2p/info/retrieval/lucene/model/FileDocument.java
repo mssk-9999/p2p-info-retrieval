@@ -41,14 +41,16 @@ public class FileDocument {
     <li><code>contents</code>--containing the full contents of the file, as a
     Reader field;
 	 */
-	public static Document Document(File f) throws java.io.FileNotFoundException {
+	public static Document Document(File f, File docDir) throws java.io.FileNotFoundException {
 
 		// make a new, empty document
 		Document doc = new Document();
 
 		// Add the path of the file as a field named "path".  Use a field that is 
 		// indexed (i.e. searchable), but don't tokenize the field into words.
-		doc.add(new Field("path", f.getPath(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		String absFilePath = f.getPath();
+		String relFilePath = absFilePath.replace(docDir.getPath(), "");
+		doc.add(new Field("path", relFilePath, Field.Store.YES, Field.Index.NOT_ANALYZED));
 
 		// Add the path of the file as a field named "path".  Use a field that is 
 		// indexed (i.e. searchable), but don't tokenize the field into words.

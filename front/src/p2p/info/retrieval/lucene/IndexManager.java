@@ -20,29 +20,30 @@ import p2p.info.retrieval.lucene.model.FileDocument;
 public class IndexManager {
 
 	private static final Logger logger = Logger.getLogger(IndexManager.class);
-	private static File INDEX_DIR;
+	private static File indexDir;
+	private static File docDir;
 
 	public IndexManager() {
 		this(new File("index"));
 	}
 
 	public IndexManager(File indexDir) {
-		INDEX_DIR = indexDir;
+		this.indexDir = indexDir;
 	}
 
 	public void createIndex(String dirToIndex) {
-		File DOC_DIR = new File(dirToIndex);
-		if (!DOC_DIR.exists() || !DOC_DIR.canRead()) {
-			logger.warn("Document directory '" + DOC_DIR.getAbsolutePath()+ "' does not exist or is not readable, please check the path");
+		docDir = new File(dirToIndex);
+		if (!docDir.exists() || !docDir.canRead()) {
+			logger.warn("Document directory '" + docDir.getAbsolutePath()+ "' does not exist or is not readable, please check the path");
 			return;
 		}
 
 		Date start = new Date();
 		try {
 			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
-			IndexWriter writer = new IndexWriter(FSDirectory.open(INDEX_DIR), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-			logger.info("Indexing to directory '" +INDEX_DIR+ "'...");
-			indexDocs(writer, DOC_DIR);
+			IndexWriter writer = new IndexWriter(FSDirectory.open(indexDir), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+			logger.info("Indexing to directory '" +indexDir+ "'...");
+			indexDocs(writer, docDir);
 			logger.info("Optimizing...");
 			writer.optimize();
 			writer.close();
@@ -71,7 +72,7 @@ public class IndexManager {
 			} else {
 				logger.trace("adding " + file);
 				try {
-					writer.addDocument(FileDocument.Document(file));
+					writer.addDocument(FileDocument.Document(file, docDir));
 				}
 				// at least on windows, some temporary files raise this exception with an "access denied" message
 				// checking if the file can be read doesn't help
@@ -87,7 +88,7 @@ public class IndexManager {
 			return;
 		}
 
-		if(!INDEX_DIR.exists()) {
+		if(!indexDir.exists()) {
 			logger.warn("Index does not exist. Exiting.");
 			return;
 		}
@@ -95,8 +96,8 @@ public class IndexManager {
 		Date start = new Date();
 		try {
 			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
-			IndexWriter writer = new IndexWriter(FSDirectory.open(INDEX_DIR), analyzer, false, IndexWriter.MaxFieldLength.LIMITED);
-			logger.info("Adding '" +DOC_DIR+ "' to index '" + INDEX_DIR + "'...");
+			IndexWriter writer = new IndexWriter(FSDirectory.open(indexDir), analyzer, false, IndexWriter.MaxFieldLength.LIMITED);
+			logger.info("Adding '" +DOC_DIR+ "' to index '" + indexDir + "'...");
 			indexDocs(writer, DOC_DIR);
 			logger.info("Optimizing...");
 			writer.optimize();
@@ -113,7 +114,7 @@ public class IndexManager {
 	}
 
 	public void removeDocument(String fileName) throws Exception {
-		if(!INDEX_DIR.exists()) {
+		if(!indexDir.exists()) {
 			logger.warn("Index does not exist. Exiting.");
 			return;
 		}
@@ -122,7 +123,7 @@ public class IndexManager {
 		QueryParser parser = new QueryParser("path", analyzer);
 		Query query = parser.parse(fileName);
 
-		Directory directory = FSDirectory.open(INDEX_DIR);
+		Directory directory = FSDirectory.open(indexDir);
 		//		IndexReader reader = IndexReader.open(directory, false); // we don't want read-only because we are about to delete
 
 		//		reader.deleteDocument(docNum);
