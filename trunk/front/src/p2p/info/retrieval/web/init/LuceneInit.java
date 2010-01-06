@@ -34,14 +34,18 @@ public class LuceneInit extends HttpServlet {
 
 	private int watchID;
 	private static IndexManager manager;
-	private String docDirPath;
+	private static String docDirPath;
+
+	public static String getDocDirPath() {
+		return docDirPath;
+	}
 
 	public void init() {
 		try {
 			initLogger();
 			initIndexer();
 			initGnutella();
-			initDirWatcher();
+//			initDirWatcher();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
