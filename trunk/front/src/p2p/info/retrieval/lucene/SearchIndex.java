@@ -54,10 +54,10 @@ public class SearchIndex {
 	private static final int HITS_PER_PAGE = 10;
 
 	// TODO: Remove this in favor of the gnutella service 
-	public static void initNode() {
+	public static void initNode(String hostsFile) {
 		try{
 			if(node == null)
-				node = new JTellaNode();
+				node = new JTellaNode(hostsFile);
 		} catch (Exception e) {
 			logger.error("Problem initializing JTellaNode instance", e);
 		}
