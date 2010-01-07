@@ -1,5 +1,8 @@
 package jtella.node;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -38,7 +41,7 @@ public class JTellaNode implements MessageReceiver {
 	 * @throws Exception 
 	 * 
 	 */
-	public JTellaNode() throws Exception {
+	public JTellaNode(String hostsFile) throws Exception {
 		InetAddress host = null;
 		String addr = defaultHostAddress;
 		try {
@@ -49,13 +52,36 @@ public class JTellaNode implements MessageReceiver {
 			throw new Exception("Problem getting host - " + e.getMessage());
 		}
 
-
-
 		jta = JTellaAdapter.getInstance();
 		jta.setHost(addr);
 
 		//sign up to receive search messages
 		jta.addSearchListener(this);
+		
+		try {
+		    BufferedReader in = new BufferedReader(new FileReader(hostsFile));
+		    String str;
+		    while ((str = in.readLine()) != null) {
+		    	if (str.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{1,5}")) {
+					String[] hostParts = str.split(":", 2);
+
+					String ipAddress;
+					int port;
+					try {
+						ipAddress = hostParts[0];
+						port = Integer.parseInt(hostParts[1]);
+					}
+					catch (Exception e) {
+						logger.error(e);
+						return;
+					}
+					jta.getConnection().getHostCache().addHost(ipAddress, port);
+				}
+		    }
+		    in.close();
+		} catch (IOException e) {
+		}
+
 	}
 
 	/* default constructor 2
