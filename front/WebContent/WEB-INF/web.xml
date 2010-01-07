@@ -36,6 +36,10 @@
 			<param-name>lucene-init-file</param-name>
 			<param-value>WEB-INF/lucene.icf</param-value>
 		</init-param>
+		<init-param>
+			<param-name>jtella-hosts-file</param-name>
+			<param-value>WEB-INF/hosts.list</param-value>
+		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
