@@ -62,7 +62,7 @@ public class JTellaAdapter implements MessageReceiver {
      */
     private JTellaAdapter() {
     	initialize();
-    	initializeHostCache();
+//    	initializeHostCache();
     	messageTable= new HashMap<String, SearchMessage>();
     	openSessions = new HashMap<String, SearchSession>();
     	searchListeners = new HashSet<MessageReceiver>();
