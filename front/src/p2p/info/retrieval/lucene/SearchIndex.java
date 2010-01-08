@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jtella.node.JTellaNode;
-
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -43,6 +41,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import p2p.info.retrieval.jtella.node.JTellaNode;
 import p2p.info.retrieval.web.model.LocalResultsThread;
 
 /** Simple command-line based search demo. */

@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jtella.node.JTellaNode;
-
 import org.apache.log4j.Logger;
 import org.directwebremoting.ScriptSession;
 import org.directwebremoting.WebContextFactory;

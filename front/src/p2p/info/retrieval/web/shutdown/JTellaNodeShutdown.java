@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
 
-import jtella.node.JTellaAdapter;
+import p2p.info.retrieval.jtella.node.JTellaAdapter;
 
 public class JTellaNodeShutdown extends HttpServlet {
 	
