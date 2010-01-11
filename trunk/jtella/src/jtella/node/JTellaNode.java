@@ -1,25 +1,19 @@
 package jtella.node;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Properties;
 
-
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.lucene.demo.SearchFiles;
-import org.apache.lucene.document.Document;
+//import org.apache.lucene.document.Document;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+//import p2p.info.retrieval.lucene.SearchIndex;
+//import p2p.info.retrieval.web.SearchFiles;
 
 import com.kenmccrary.jtella.GNUTellaConnection;
 import com.kenmccrary.jtella.MessageReceiver;
@@ -47,7 +41,7 @@ public class JTellaNode implements MessageReceiver {
 	 * @throws Exception 
 	 * 
 	 */
-	public JTellaNode() throws Exception {
+	public JTellaNode(String hostsFile) throws Exception {
 		InetAddress host = null;
 		String addr = defaultHostAddress;
 		try {
@@ -63,6 +57,31 @@ public class JTellaNode implements MessageReceiver {
 
 		//sign up to receive search messages
 		jta.addSearchListener(this);
+		
+		try {
+		    BufferedReader in = new BufferedReader(new FileReader(hostsFile));
+		    String str;
+		    while ((str = in.readLine()) != null) {
+		    	if (str.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{1,5}")) {
+					String[] hostParts = str.split(":", 2);
+
+					String ipAddress;
+					int port;
+					try {
+						ipAddress = hostParts[0];
+						port = Integer.parseInt(hostParts[1]);
+					}
+					catch (Exception e) {
+						logger.error(e);
+						return;
+					}
+					jta.getConnection().getHostCache().addHost(ipAddress, port);
+				}
+		    }
+		    in.close();
+		} catch (IOException e) {
+		}
+
 	}
 
 	/* default constructor 2
@@ -78,56 +97,42 @@ public class JTellaNode implements MessageReceiver {
 
 	}
 
-
-	public JTellaNode(String indexPath) throws Exception {
-		this();
-		SearchFiles.setIndex(indexPath);
-	}
-
 	/**
 	 * @param args not used
 	 */
-	public static void main(String[] args) {
-
-		try {
-
-			BasicConfigurator.configure();
-			Logger.getLogger("com.dan").setLevel(Level.WARN);
-			Logger.getLogger("protocol.com.dan").setLevel(Level.WARN);
-			Logger.getLogger("com.kenmccrary").setLevel(Level.WARN);
-			//			Logger.getLogger("org.apache.lucene").setLevel(Level.INFO);
-
-			JTellaNode node = null;
-			if (args.length==0){ //nothing is provided : use default values
-				System.out.println("Usage: JTellaNode [indexPath] \n Using default values.");
-				node = new JTellaNode();	
-			}
-
-			else if (args.length==1){
-				node = new JTellaNode(args[0]);
-			}
-
-			//		else if (args.length==2){
-			//			node = new JTellaNode(args[0], Integer.parseInt(args[1]));
-			//		}
-			else {
-				System.out.println("Invalid number of arguments! \n Usage: JTellaNode [indexPath] \n Using default values.");
-				node = new JTellaNode();	
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	public void finalize() {
-		System.out.println("Node shutting down...");
-		jta.shutdown();
-		System.exit(0);
-	}
-
-
+	//	public static void main(String[] args) {
+	//
+	//		try {
+	//
+	//			BasicConfigurator.configure();
+	//			Logger.getLogger("com.dan").setLevel(Level.WARN);
+	//			Logger.getLogger("protocol.com.dan").setLevel(Level.WARN);
+	//			Logger.getLogger("com.kenmccrary").setLevel(Level.WARN);
+	//			//			Logger.getLogger("org.apache.lucene").setLevel(Level.INFO);
+	//
+	//			JTellaNode node = null;
+	//			if (args.length==0){ //nothing is provided : use default values
+	//				System.out.println("Usage: JTellaNode [indexPath] \n Using default values.");
+	//				node = new JTellaNode();	
+	//			}
+	//
+	//			else if (args.length==1){
+	//				node = new JTellaNode(args[0]);
+	//			}
+	//
+	//			//		else if (args.length==2){
+	//			//			node = new JTellaNode(args[0], Integer.parseInt(args[1]));
+	//			//		}
+	//			else {
+	//				System.out.println("Invalid number of arguments! \n Usage: JTellaNode [indexPath] \n Using default values.");
+	//				node = new JTellaNode();	
+	//			}
+	//		} catch (Exception e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		}
+	//
+	//	}
 
 	public void injectmessage(String msg, String id) {
 
@@ -153,39 +158,35 @@ public class JTellaNode implements MessageReceiver {
 		String criteria = searchMessage.getSearchCriteria();
 		System.out.println("Search: " + criteria);
 
-		List<Document> list = null;
-
-		try {
-			Object obj = JSONValue.parse(criteria);
-			JSONObject searchObj = (JSONObject)obj;
-			String sessionId = (String)searchObj.get("sessionId");
-			String searchStr = (String)searchObj.get("query");
-			try {
-				list = SearchFiles.doSimpleSearch(searchStr);
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Exception performing search", e);
-			}
-
-			JSONObject resultsObj = new JSONObject();
-			resultsObj.put("sessionId", sessionId);
-
-			JSONArray resultArr = new JSONArray();
-			if (list != null) {
-				for(Document d : list) {
-					JSONObject resultObj = new JSONObject();
-					resultObj.put("path", d.get("path"));
-					resultObj.put("modified", d.get("modified"));
-					resultObj.put("size", d.get("size"));
-					resultArr.add(resultObj);
-				}
-			}
-			resultsObj.put("searchResults", resultArr);
-			injectSearchReply(resultsObj.toJSONString(), String.valueOf(searchMessage.hashCode()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Exception in receiveSearch", e);
-		}
+//		List<Document> list = null;
+//
+//		try {
+//			Object obj = JSONValue.parse(criteria);
+//			JSONObject searchObj = (JSONObject)obj;
+//			String sessionId = (String)searchObj.get("sessionId");
+//			String searchStr = (String)searchObj.get("query");
+//
+//			list = SearchIndex.doSimpleSearch(searchStr);
+//
+//			JSONObject resultsObj = new JSONObject();
+//			resultsObj.put("sessionId", sessionId);
+//
+//			JSONArray resultArr = new JSONArray();
+//			if (list != null) {
+//				for(Document d : list) {
+//					JSONObject resultObj = new JSONObject();
+//					resultObj.put("path", d.get("path"));
+//					resultObj.put("modified", d.get("modified"));
+//					resultObj.put("size", d.get("size"));
+//					resultArr.add(resultObj);
+//				}
+//			}
+//			resultsObj.put("searchResults", resultArr);
+//			injectSearchReply(resultsObj.toJSONString(), String.valueOf(searchMessage.hashCode()));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error("Exception in receiveSearch", e);
+//		}
 
 	}
 
@@ -205,16 +206,18 @@ public class JTellaNode implements MessageReceiver {
 			JSONArray results = (JSONArray)reply.get("searchResults");
 
 			JSONArray tempArray = new JSONArray();
-			
+
 			for(Object obj: results) {
 				JSONObject result = (JSONObject)obj;
 				result.put("respondingIP", respondingIP);
 				tempArray.add(result);
 			}
-			
-			reply.put("searchResults", tempArray);
 
-			p2p.info.retrieval.web.SearchFiles.receiveSearchReply(reply.toJSONString());
+			reply.put("searchResults", tempArray);
+			
+			logger.debug("Search reply - " + reply.toJSONString());
+
+//			SearchFiles.receiveSearchReply(reply.toJSONString());
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
@@ -222,7 +225,6 @@ public class JTellaNode implements MessageReceiver {
 
 	public GNUTellaConnection getConnection() {
 		return jta.getConnection();
-
 	}
 
 }

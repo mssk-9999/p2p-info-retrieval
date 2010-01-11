@@ -1,11 +1,18 @@
 package jtella.node;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +44,8 @@ public class SearchService extends AbstractWorker implements MessageReceiver{
 	private static ITuple directSearchTemplate;
 	private static ITuple searchReplyTemplate;
 
-	private static List<Socket> searchNodes;
-	private static List<Socket> retrievalNodes;
+	private static List<SocketChannel> searchNodes;
+	private static List<SocketChannel> retrievalNodes;
 
 	private void initJTA() throws Exception {
 		InetAddress host = null;
@@ -80,8 +87,8 @@ public class SearchService extends AbstractWorker implements MessageReceiver{
 		
 		initTupleTemplates();
 		
-		searchNodes = new ArrayList<Socket>();
-		retrievalNodes = new ArrayList<Socket>();
+		searchNodes = new ArrayList<SocketChannel>();
+		retrievalNodes = new ArrayList<SocketChannel>();
 
 		initJTA();
 		logger.info("Node Created");
@@ -108,12 +115,17 @@ public class SearchService extends AbstractWorker implements MessageReceiver{
 			JSONObject jsonNotifier = new JSONObject();
 			jsonNotifier.put("notify", "incoming search");
 			// Notify retrievers
-			for(Socket s : retrievalNodes) {
+			for(SocketChannel s : retrievalNodes) {
 				try {
-					PrintWriter out = new PrintWriter(s.getOutputStream());
-					out.println(jsonNotifier.toJSONString());
+					ByteBuffer writeBuffer = ByteBuffer.allocate(1024);
+					writeBuffer.put(jsonNotifier.toJSONString().getBytes());
+					writeBuffer.flip();
+					while (writeBuffer.hasRemaining()) {
+						s.write(writeBuffer);
+					}
+					writeBuffer.clear();
 				} catch (IOException e) {
-					logger.error("Couldn't retrieve output stream for node: " + s.getInetAddress().getHostAddress());
+					logger.error("Couldn't retrieve output stream for node: " + s.socket().getInetAddress().getHostAddress());
 				}
 			}
 		}
@@ -123,12 +135,34 @@ public class SearchService extends AbstractWorker implements MessageReceiver{
 			JSONObject jsonNotifier = new JSONObject();
 			jsonNotifier.put("notify", "search reply");
 			// Notify searchers
-			for(Socket s : searchNodes) {
+//			for(SocketChannel s : searchNodes) {
+			for(SocketChannel s : retrievalNodes) {
 				try {
-					PrintWriter out = new PrintWriter(s.getOutputStream());
-					out.println(jsonNotifier.toJSONString());
+					logger.debug("Writing...");
+//					Writer writer = new OutputStreamWriter(s.socket().getOutputStream(), "US-ASCII");
+//					PrintWriter out = new PrintWriter(writer, true);
+//					out.println(jsonNotifier.toJSONString());
+					
+					ByteBuffer writeBuffer = ByteBuffer.allocate(1024);
+					writeBuffer.put(jsonNotifier.toJSONString().getBytes());
+					writeBuffer.flip();
+					while (writeBuffer.hasRemaining()) {
+						s.write(writeBuffer);
+					}
+					s.close();
+//					long nbytes = 0;
+//					long toWrite = writeBuffer.remaining();
+//				 
+//					// loop on the channel.write() call since it will not necessarily
+//					// write all bytes in one shot
+//					try {
+//					    while (nbytes != toWrite) {
+//					    	nbytes += s.write(writeBuffer);
+//					    }
+//					} catch (ClosedChannelException cce) {}
+					writeBuffer.clear();
 				} catch (IOException e) {
-					logger.error("Couldn't retrieve output stream for node: " + s.getInetAddress().getHostAddress());
+					logger.error("Couldn't retrieve output stream for node: " + s.socket().getInetAddress().getHostAddress());
 				}
 			}
 		}
@@ -174,11 +208,11 @@ public class SearchService extends AbstractWorker implements MessageReceiver{
 
 	}
 
-	public static void registerNode(ITuple t, Socket s) {
+	public static void registerNode(ITuple t, SocketChannel socketChannel) {
 		if(t.matches(directSearchTemplate)) {
-			searchNodes.add(s);
+			searchNodes.add(socketChannel);
 		} else {
-			retrievalNodes.add(s);
+			retrievalNodes.add(socketChannel);
 		}
 		
 	}
