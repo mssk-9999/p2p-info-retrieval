@@ -1,2 +1,0 @@
-#Index Dir
-java -classpath "../lucene-core-2.9.0.jar;C:/users/Steve/workspace/front/WebContent/WEB-INF/lib/lucene-demos-2.9.0.jar" org.apache.lucene.demo.IndexFiles ../src/org
