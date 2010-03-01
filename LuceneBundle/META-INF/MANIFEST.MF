@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: LuceneBundle
+Bundle-SymbolicName: LuceneBundle
+Bundle-Version: 1.0.0
+Bundle-Activator: p2p.lucene.Activator
+Import-Package: org.osgi.framework,
+ p2p.jtella.model
+Bundle-ClassPath: lib/json_simple-1.1.jar,
+ lib/log4j-1.2.14.jar,
+ lib/lucene-core-3.0.1.jar,
+ lib/jci-fam.jar,
+ lib/commons-logging-1.1.1.jar,
+ .
