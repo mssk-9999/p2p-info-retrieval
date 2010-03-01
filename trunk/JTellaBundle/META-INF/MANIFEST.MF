@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JTellaBundle
+Bundle-SymbolicName: JTellaBundle
+Bundle-Version: 1.0.0
+Import-Package: org.osgi.framework
+Export-Package: p2p.jtella.model,
+ p2p.jtella.service
+Bundle-ClassPath: lib/json_simple-1.1.jar,
+ lib/jtella-07.steve.jar,
+ lib/log4j-1.2.14.jar,
+ lib/polyester.jar,
+ .
+Bundle-Activator: p2p.jtella.Activator
