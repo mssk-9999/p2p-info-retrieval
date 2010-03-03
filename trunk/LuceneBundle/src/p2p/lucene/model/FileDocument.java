@@ -18,11 +18,22 @@ package p2p.lucene.model;
  */
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.sax.BodyContentHandler;
+import org.apache.tika.sax.ContentHandlerDecorator;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
 /** A utility for making Lucene Documents from a File. */
 
@@ -40,8 +51,11 @@ public class FileDocument {
     href="lucene.document.DateTools.html">DateTools</a>; and
     <li><code>contents</code>--containing the full contents of the file, as a
     Reader field;
+	 * @throws TikaException 
+	 * @throws SAXException 
+	 * @throws IOException 
 	 */
-	public static Document Document(File f, File docDir) throws java.io.FileNotFoundException {
+	public static Document Document(File f, File docDir) throws IOException, SAXException, TikaException {
 
 		// make a new, empty document
 		Document doc = new Document();
@@ -67,7 +81,35 @@ public class FileDocument {
 		// so that the text of the file is tokenized and indexed, but not stored.
 		// Note that FileReader expects the file to be in the system's default encoding.
 		// If that's not the case searching for special characters will fail.
-		doc.add(new Field("contents", new FileReader(f)));
+		InputStream stream = new FileInputStream(f);
+		ContentHandler handler = new BodyContentHandler(); 
+		ContentHandlerDecorator decorator = new ContentHandlerDecorator(handler);
+		
+		Metadata data = new Metadata();
+		data.add("title", "");
+		data.add("author", "");
+		data.add("subject", "");
+		
+		ParseContext context = new ParseContext();
+		AutoDetectParser parser = new AutoDetectParser();
+		parser.parse(stream, handler, data, context);
+		
+		doc.add(new Field("contents", new StringReader(decorator.toString())));
+
+		//Add the Title of the file in a field named "title". Use a field that is indexed
+		//(i.e. searchable), but don't tokenize the field into words. If this file does not
+		//contain a title this field is left empty.
+		doc.add(new Field("title", data.get("title"), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		
+		//Add the Author of the file in a field named "author". Use a field that is indexed
+		//(i.e. searchable), but don't tokenize the field into words. If the file does not contain
+		//an author this field is left empty.
+		doc.add(new Field("author", data.get("author"), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		
+		//Add the subject of the file in a field named "subject". Use a field that is indexed
+		//(i.e. searchable), but don't tokenize the field into words. If the file does not contain
+		//a subject this field is left empty. 
+		doc.add(new Field("subject", data.get("subject"), Field.Store.YES, Field.Index.NOT_ANALYZED));
 
 		// return the document
 		return doc;

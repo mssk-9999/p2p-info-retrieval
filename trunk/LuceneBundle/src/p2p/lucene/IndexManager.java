@@ -24,9 +24,11 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Version;
+import org.apache.tika.exception.TikaException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.xml.sax.SAXException;
 
 import p2p.lucene.model.FileDocument;
 
@@ -124,7 +126,12 @@ public class IndexManager {
 				}
 				// at least on windows, some temporary files raise this exception with an "access denied" message
 				// checking if the file can be read doesn't help
-				catch (FileNotFoundException fnfe) {}
+				catch (FileNotFoundException fnfe) {} 
+				catch (SAXException e) {
+					logger.warn("Problem parsing document: "+file.getName(),e);
+				} catch (TikaException e) {
+					logger.warn("Problem parsing document: "+file.getName(),e);
+				}
 			}
 		}
 	}

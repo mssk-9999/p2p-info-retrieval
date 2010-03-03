@@ -5,13 +5,26 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/json_simple-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.14.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/lucene-core-3.0.1.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="http://lucene.apache.org/java/3_0_1/api/core"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/lucene-core-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jci-fam.jar" sourcepath="/jci-fam"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/asm-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-compress-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/fontbox-0.8.0-incubator.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-stax-api_1.0_spec-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jempbox-0.8.0-incubator.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/metadata-extractor-2.4.0-beta-1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/pdfbox-0.8.0-incubating.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-3.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-3.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-schemas-3.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-scratchpad-3.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tagsoup-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tika-core-0.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tika-parsers.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xml-apis-1.0.b2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xmlbeans-2.3.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
