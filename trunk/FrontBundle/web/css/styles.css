@@ -1,0 +1,51 @@
+a {
+	color: #385F95;
+	font: bold 11px tahoma, arial, helvetica, sans-serif;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+p {
+	margin: 3px !important;
+}
+
+.search-item .x-toolbar {
+	border: 0 none;
+}
+
+.search-item {
+	text-align: left;
+    font:normal 11px tahoma, arial, helvetica, sans-serif;
+    min-height: 30px;
+    padding:3px 10px 3px 10px;
+    border:1px solid #fff;
+    border-bottom:1px solid #eeeeee;
+    white-space:normal;
+    color:#555;
+}
+.search-item h3 {
+    display:block;
+    font:inherit;
+    font-weight:bold;
+    color:#222;
+}
+
+.search-item h3 span {
+    float: right;
+    font-weight:normal;
+    margin:0 0 5px 5px;
+    width:100px;
+    display:block;
+    clear:none;
+}
+
+.icon-hometab {
+	background-image: url( ../ext/resources/images/docs.gif ) !important;
+}
+
+.icon-searchtabs {
+	background-image: url( ../ext/resources/images/tabs.gif ) !important;
+}
