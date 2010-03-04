@@ -119,6 +119,7 @@ Ext.onReady(function(){
             height: 32, // give north and south regions a height
             autoEl: {
                 tag: 'div',
+                cls: 'south-content',
                 html:'<center><p><a href="http://code.google.com/p/p2p-info-retrieval/" target="_blank">Project Home Page</a></p></center>'
             }
         })

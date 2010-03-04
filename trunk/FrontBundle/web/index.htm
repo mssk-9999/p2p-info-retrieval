@@ -1,114 +1,89 @@
 <html>
 <head>
-	<title>Search GUI</title>
-	
+<title>Search GUI</title>
+
 <!--	Dwr-->
-	<script type='text/javascript' src='dwr/interface/SearchFilesInterface.js'></script>
-	<script type='text/javascript' src='dwr/engine.js'></script>
-	
+<script type='text/javascript'
+	src='dwr/interface/SearchFilesInterface.js'></script>
+<script type='text/javascript' src='dwr/engine.js'></script>
+
 <!--	Stylesheets-->
-	<link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css" />
-	<link rel="stylesheet" type="text/css" href="css/styles.css" />
-	
+<link rel="stylesheet" type="text/css"
+	href="ext/resources/css/ext-all.css" />
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+
 <!--	ExtJS-->
-	<script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
-	<script type="text/javascript" src="ext/ext-all.js"></script>
-	<script type="text/javascript" src="ext/ux/DwrProxy.js"></script>
-	<script type="text/javascript" src="ext/ux/TabCloseMenu.js"></script>
-	<script type="text/javascript" src="SearchField.js"></script>
-	
+<script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="ext/ext-all.js"></script>
+<script type="text/javascript" src="ext/ux/DwrProxy.js"></script>
+<script type="text/javascript" src="ext/ux/TabCloseMenu.js"></script>
+<script type="text/javascript" src="SearchField.js"></script>
+
 <!--	Content-->
-	<script type="text/javascript" src="search.js"></script>
+<script type="text/javascript" src="search.js"></script>
 </head>
 <body>
 <!--	Body Start-->
 
-	<div id="tab1" class="x-hide-display">
-    	<table border="0" width="100%" cellpadding="10">
-<tr>
+<div id="tab1" class="x-hide-display tab-content width-control">
+<h3>Introduction</h3>
 
-<td width="50%" valign="top"> 
-<h3>
-Introduction
-</h3>
+<p>This is the seach interface for the Peer to Peer Information
+Retrieval system. The project is built on the Gnutella protocol and
+relies on an index created by apache Lucene to make indexed searches
+over a peer to peer network. Searches can be performed from the search
+box found above and using Direct Web Remoting (DWR) results are returned
+continuously as they arrive.</p>
 
-<p>
-This is the seach interface for the Peer to Peer Information Retrieval system.
-The project is built on the Gnutella protocol and relies on an index created by
-apache Lucene to make indexed searches over a peer to peer network. Searches can 
-be performed from the search box found above and using Direct Web Remoting (DWR) 
-results are returned continuously as they arrive. 
-</p>
+<h3>Setting up the Index</h3>
 
-<h3>
-Setting up the Index
-</h3>
+<p>The index is set up automatically the first time the project is
+run. It will index any files that are currently in the directory to
+index folder. In order to modify the index simply add, remove or modify
+the files in this folder and the index will be updated automatically.</p>
 
-<p>
-The index is set up automatically the first time the project is run. It will index
-any files that are currently in the directory to index folder. In order to modify the
-index simply add, remove or modify the files in this folder and the index will be updated
-automatically. 
-</p>
+<h3>How To</h3>
 
-<h3>
-How To
-</h3>
+<p>In order to perform searches using this project enter the term
+you wish to search for in the search box above. The search box will
+accept any alpha-numeric combination as well special characters. The
+search that is performed will return a link to any file that has the
+search term anywhere in its body. In addition it will return a link to
+any files that contain the search word in their ID3 tags; tags used to
+catagorize music files. Once a result is found clicking on the link will
+download the file.</p>
 
-<p> 
-In order to perform searches using this project enter the term you wish to search 
-for in the search box above. The search box will accept any alpha-numeric combination 
-as well special characters. The search that is performed will return a link to any 
-file that has the search term anywhere in its body. In addition it will return a link 
-to any files that contain the search word in their ID3 tags; tags used to catagorize 
-music files. Once a result is found clicking on the link will download the file. 
-</p> 
+<h3>Supported File types</h3>
 
-<h3>
-Supported File types
-</h3>
-
-<p>
-The following is a list of file types that can be indexed and searched for using this project. 
-Note that the project supports more filetypes but these key ones are all that have been 
-tested thus far. 
-<br />
+<p>The following is a list of file types that can be indexed and
+searched for using this project. Note that the project supports more
+filetypes but these key ones are all that have been tested thus far. <br />
 <ul>
-<li> txt </li>
-<li> doc </li>
-<li> docx </li>
-<li> rtf </li>
-<li> html </li>
-<li> pdf </li>
-<li> mp3 </li>
+	<li>txt</li>
+	<li>doc</li>
+	<li>docx</li>
+	<li>rtf</li>
+	<li>html</li>
+	<li>pdf</li>
+	<li>mp3</li>
 </ul>
 </p>
 
-<h3>
-Sample Test Searches
-</h3>
+<h3>Sample Test Searches</h3>
 
-<p>
-Some sample searches that can be performed with this test of the project include:
-<br />
+<p>Some sample searches that can be performed with this test of the
+project include: <br />
 <ul>
-<li> Peer to Peer </li>
-<li> JTella </li>
-<li> Gnutella </li>
-<li> Lucene </li>
-<li> test </li>
-<li> Story of the year(Artist of an mp3) </li>
-<li> The constant (album for the mp3) </li>
+	<li>Peer to Peer</li>
+	<li>JTella</li>
+	<li>Gnutella</li>
+	<li>Lucene</li>
+	<li>test</li>
+	<li>Story of the year(Artist of an mp3)</li>
+	<li>The constant (album for the mp3)</li>
 </ul>
 </p>
-
-
-</td>
-<td width="50%" valign="top">
-</td>
-</tr>
-</table>
-    </div>
+</div>
 
 <!--Body End-->
 </body>
