@@ -9,7 +9,7 @@ Following is a list of third party technologies used in this project. These tech
 
 == Links ==
 
- * [http://www.directwebremoting.com DWR]
+ * [http://www.directwebremoting.org DWR]
  * [http://json.org JSON]
- * [http://sourceforge.net/projects/polyester Polyester]
+ * [http://www.osgi.org OSGi]
  * [http://logging.apache.org/log4j/1.2/index.html Log4J]
