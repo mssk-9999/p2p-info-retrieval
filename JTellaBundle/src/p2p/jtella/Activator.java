@@ -30,7 +30,6 @@ public class Activator implements BundleActivator {
 		initLogger();
 		context = bc;
 		File f = new File("hosts.list");
-		f.createNewFile();
 		jtella = new SearchImpl(f);
 		bc.registerService(SearchService.class.getName(), jtella, null);
 	}
@@ -56,6 +55,8 @@ public class Activator implements BundleActivator {
 		Logger.getLogger("com.dan").setLevel(Level.WARN);
 		Logger.getLogger("protocol.com.dan").setLevel(Level.WARN);
 		Logger.getLogger("com.kenmccrary").setLevel(Level.WARN);
+		Logger.getLogger("protocol.com.kenmccrary").setLevel(Level.WARN);
+		
 		logger = Logger.getLogger(Activator.class);
 //		}
 	}

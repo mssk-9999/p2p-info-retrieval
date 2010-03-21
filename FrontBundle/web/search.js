@@ -9,8 +9,7 @@ Ext.onReady(function(){
 			'<div class="search-item">',
 //			'<h3><span>{modified:date("M j, Y")}</span>',
 			'<h3><span>{respondingIP}<br />{size}</span>',
-			'<a href="http://{respondingIP}:8080/front/getFile?path={path}">{path}</a></h3>',
-//			'<a href="http://google.com" target="_blank">{path}</a></h3>',
+			'<a href="http://{respondingIP}:8080/getFile?path={path}" target="_blank">{path}</a></h3>',
 			'</div></tpl>'
 	);
 

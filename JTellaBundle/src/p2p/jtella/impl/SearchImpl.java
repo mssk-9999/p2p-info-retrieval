@@ -5,9 +5,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.osgi.framework.InvalidSyntaxException;
 
 import p2p.jtella.Activator;
@@ -44,14 +50,12 @@ public class SearchImpl implements SearchService, MessageReceiver {
 	}
 
 	private void initJTA() throws Exception {
-		InetAddress host = null;
 		String addr = defaultHostAddress;
 		try {
-			host = InetAddress.getLocalHost();
-			addr = host.getHostAddress();
+			addr = findLocalIP();
+			logger.debug("Registering with local ip: " + addr);
 		} catch (Exception e) {
-			logger.error("Problem getting host", e);
-			throw new Exception("Problem getting host - " + e.getMessage());
+			logger.warn("Problem getting host, using default loopback: 127.0.0.1", e);
 		}
 
 		jta = JTellaAdapter.getInstance();
@@ -59,6 +63,26 @@ public class SearchImpl implements SearchService, MessageReceiver {
 
 		//sign up to receive search messages
 		jta.addSearchListener(this);
+	}
+	
+	/*
+	 * Finds the local IP by iterating through the local network interfaces
+	 * and retrieving the first (default) site local address.
+	 */
+	public String findLocalIP() throws UnknownHostException, SocketException {
+		String host = null;
+		Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();		
+		while(interfaces.hasMoreElements() && host == null) {
+			NetworkInterface ni = interfaces.nextElement();
+			Enumeration<InetAddress> addresses = ni.getInetAddresses();
+			while(addresses.hasMoreElements() && host == null) {
+				InetAddress address = addresses.nextElement();
+				if(address.isSiteLocalAddress()){
+					host = address.getHostAddress();
+				}
+			}
+		}
+		return host;
 	}
 
 	private void readHostsFile(File hostsFile) {
@@ -71,13 +95,14 @@ public class SearchImpl implements SearchService, MessageReceiver {
 					String[] hostParts = str.split(":", 2);
 
 					String ipAddress = hostParts[0];
-					int port = Integer.parseInt(hostParts[1]);
-
-					jta.getConnection().getHostCache().addHost(ipAddress, port);
+					try {
+						int port = Integer.parseInt(hostParts[1]);
+						jta.getConnection().getHostCache().addHost(ipAddress, port);
+					} catch (NumberFormatException e){}
 				}
 			}
 		} catch (IOException e) {
-			logger.warn("Problem reading hosts file", e);
+			logger.warn("Problem reading hosts file. No hosts will be loaded - " + e.getMessage());
 		} finally {
 			try{ in.close(); } catch(Exception e) {};
 		}
@@ -116,7 +141,7 @@ public class SearchImpl implements SearchService, MessageReceiver {
 		String msg = "";
 		int numRecords = searchReplyMessage.getFileCount();
 		for(int i = 0; i < numRecords; i++)
-			msg = msg.concat(searchReplyMessage.getFileRecord(i).toString());
+			msg = msg.concat(searchReplyMessage.getFileRecord(i).getName());
 
 		logger.info("Got reply: "+msg);
 
@@ -131,10 +156,15 @@ public class SearchImpl implements SearchService, MessageReceiver {
 		}
 
 		if(success) {
-			// TODO: Split this up so we only return results to the correct client
 			if(!msg.isEmpty()) {
+				// Add remote ip
+				String ipAddress = searchReplyMessage.getIPAddress();
+				JSONObject msgObj = (JSONObject)JSONValue.parse(msg);
+				msgObj.put("respondingIP", ipAddress);
+				// TODO: Split this up so we only return results to the correct client
+
 				for(IClient c : clients) {
-					c.receiveSearchReply(msg);
+					c.receiveSearchReply(msgObj.toJSONString());
 				}
 			}
 		}
@@ -158,7 +188,7 @@ public class SearchImpl implements SearchService, MessageReceiver {
 			indexers = Activator.getIndexers();
 			if(indexers == null)
 				throw new RuntimeException("No indexers are installed");
-		} catch (InvalidSyntaxException e) {
+		} catch (Exception e) {
 			logger.warn("Problem getting indexers. This node will not search. " + e.getMessage());
 			success = false;
 		}
