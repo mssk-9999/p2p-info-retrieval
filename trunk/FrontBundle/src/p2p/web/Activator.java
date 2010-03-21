@@ -1,11 +1,15 @@
 package p2p.web;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -88,13 +92,18 @@ public class Activator implements BundleActivator {
 			{
 				// create a default context to share between registrations
 				final HttpContext httpContext = httpService.createDefaultHttpContext();
-				// register the hello world servlet
+				// register the dwr servlet
 				final Dictionary<String, String> dwrInitParams = new Hashtable<String, String>();
 				dwrInitParams.put( "classes", "p2p.web.SearchFiles, p2p.web.model.Result" );
 				dwrInitParams.put( "debug", "true" );
 				dwrInitParams.put( "activeReverseAjaxEnabled", "true" );
-//				dwrInitParams.put( "config-dwr", "/bin/p2p/web/dwr.xml" );
-//				dwrInitParams.put( "welcomeFiles", "index.html, index.htm, index.jsp" );
+				/* TODO - Bug: We set the timeout high to avoid the default timeout of 5mins
+				 * but it should be changed to either not timeout or refresh when a timeout occurs
+				 * See SearchFiles.java
+				 */
+				dwrInitParams.put( "scriptSessionTimeout", "1440000" );
+
+				// register the dwr servlet
 				httpService.registerServlet(
 						"/dwr",					// alias
 						new DwrServlet(),		// registered servlet
@@ -102,17 +111,27 @@ public class Activator implements BundleActivator {
 						httpContext				// http context
 				);
 
-//				final Dictionary<String, String> initParams = new Hashtable<String, String>();
-//				initParams.put( "log4j-init", "bin/p2p/web/log4j.lcf" );
-//				httpService.registerServlet(
-//						"/servlet",					// alias
-//						new WebServlet(),		// registered servlet
-//						initParams,				// init params
-//						httpContext				// http context
-//				);
+				class TmpServlet extends HttpServlet {
+
+					@Override
+					protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+						resp.sendRedirect("web/index.htm");
+					}
+					
+				}
+				
+				httpService.registerServlet("/", new TmpServlet(), null, httpContext);
+				
+				httpService.registerServlet(
+						"/getFile", 
+						new FileServer(), 
+						null, 
+						httpContext
+				);
+
 				// register images as resources
 				httpService.registerResources(
-						"/",
+						"/web",
 						"/web",
 						httpContext
 				);

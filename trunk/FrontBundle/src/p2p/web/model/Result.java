@@ -64,21 +64,25 @@ public class Result {
 //			results.add(new Result(doc));
 //		return results;
 //	}
-
-	private Result(JSONObject obj) {
+	
+	private Result(JSONObject obj, String respondingIP) {
 		modified = (String)obj.get("modified");
 		path = (String)obj.get("path");
 		size = (String)obj.get("size");
-		String tmpIP;
-		respondingIP = (tmpIP = (String)obj.get("respondingIP")) != null ? tmpIP : "127.0.0.1";
+		if(respondingIP != null && !respondingIP.isEmpty()) {
+			this.respondingIP = respondingIP;
+		} else {
+			this.respondingIP = "127.0.0.1";
+		}
+		
 	}
 
-	public static List<Result> getResultsFromArray(JSONArray searchResults) {
+	public static List<Result> getResultsFromArray(JSONArray searchResults, String respondingIP) {
 
 		List<Result> results = new ArrayList<Result>(searchResults.size());
 
 		for(Object obj : searchResults) {
-			results.add(new Result((JSONObject)obj));
+			results.add(new Result((JSONObject)obj, respondingIP));
 		}
 
 		return results;

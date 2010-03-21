@@ -21,8 +21,8 @@ public class LuceneImpl implements IIndexer {
 	private File index;
 
 	public LuceneImpl() throws Exception {
-		docDir = new File("/Users/Steve/workspace/front_demo/dir-to-index");
-		index = new File("/Users/Steve/workspace/front_demo/index");
+		docDir = new File("Documents");
+		index = new File("index");
 		if(docDir.mkdir())
 			logger.debug("Documents directory did not exist. It has now been created.");
 		
@@ -37,15 +37,15 @@ public class LuceneImpl implements IIndexer {
 	private class MyFilesystemAlterationListener extends AbstractFilesystemAlterationListener {
 		public void onDirectoryCreate( final File dir ) {
 			super.onDirectoryCreate(dir);
-			logger.debug("Dir created: "+dir.getAbsolutePath());
+//			logger.debug("Dir created: "+dir.getAbsolutePath());
 		}
 		public void onDirectoryChange( final File dir ) {
 			super.onDirectoryChange(dir);
-			logger.debug("Dir changed: "+dir.getAbsolutePath());
+//			logger.debug("Dir changed: "+dir.getAbsolutePath());
 		}
 		public void onDirectoryDelete( final File dir ) {
 			super.onDirectoryDelete(dir);
-			logger.debug("Dir deleted: "+dir.getAbsolutePath());
+//			logger.debug("Dir deleted: "+dir.getAbsolutePath());
 		}
 
 		public void onFileCreate( final File file) {

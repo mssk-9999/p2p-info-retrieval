@@ -18,8 +18,8 @@ Import-Package: javax.servlet,
  org.osgi.service.http,
  org.w3c.dom,
  org.xml.sax,
- p2p.jtella.service,
- p2p.jtella.model
+ p2p.jtella.model,
+ p2p.jtella.service
 Bundle-ClassPath: lib/commons-logging-1.1.1.jar,
  lib/dwr.jar,
  lib/json_simple-1.1.jar,

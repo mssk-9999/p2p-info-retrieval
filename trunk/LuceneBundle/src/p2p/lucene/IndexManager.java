@@ -51,7 +51,7 @@ public class IndexManager {
 		Directory directory = FSDirectory.open(indexDir);
 		writer = new IndexWriter(directory, analyzer, IndexWriter.MaxFieldLength.LIMITED);
 		reader = writer.getReader();
-		docDir = new File("/Users/Steve/workspace/front_demo/dir-to-index");
+		docDir = new File("Documents");
 		
 		return exists;
 	}

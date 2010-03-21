@@ -9,6 +9,8 @@ import org.directwebremoting.ScriptSession;
 import org.directwebremoting.WebContextFactory;
 import org.directwebremoting.annotations.RemoteMethod;
 import org.directwebremoting.annotations.RemoteProxy;
+import org.directwebremoting.extend.ScriptSessionManager;
+import org.directwebremoting.impl.DefaultScriptSessionManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -33,7 +35,7 @@ public class SearchFiles implements IClient {
 	@SuppressWarnings("unchecked")
 	@RemoteMethod
 	public void getResults(String query, String storeId, String callback) throws Exception {
-		logger.info("New Query: " + query);
+		logger.debug("New Query: " + query);
 
 		try {
 
@@ -42,7 +44,7 @@ public class SearchFiles implements IClient {
 
 			// Get the DWR script session
 			ScriptSession session = WebContextFactory.get().getScriptSession();
-			// Create a unique (local) id for the search using the current time
+			
 			String sessionId = session.getId();
 
 			logger.debug("Session id: " + sessionId);
@@ -58,6 +60,8 @@ public class SearchFiles implements IClient {
 			JSONObject jsonQuery = new JSONObject();
 			jsonQuery.put("sessionId", sessionId);
 			jsonQuery.put("query", query.trim());
+//			jsonQuery.put("callback", callback.trim());
+//			jsonQuery.put("storeId", storeId.trim());
 
 			logger.debug("Search Created: " + jsonQuery.toJSONString());
 
@@ -80,21 +84,37 @@ public class SearchFiles implements IClient {
 	 */
 	//	@RemoteMethod
 	public void receiveSearchReply(String reply) {
-		logger.info("Result: " + reply);
+		logger.debug("Result: " + reply);
 
 		try {
 			JSONObject obj = (JSONObject)JSONValue.parse(reply);
 
 			JSONArray searchResults = (JSONArray)obj.get("searchResults");
-			List<Result> newResults = Result.getResultsFromArray(searchResults);
+			String respondingIP = (String)obj.get("respondingIP");
+			List<Result> newResults = Result.getResultsFromArray(searchResults, respondingIP);
 
 			// Get the stored DWR session object
 			String sessionId = (String) obj.get("sessionId");
+//			String callback = (String) obj.get("callback");
+//			String storeId = (String) obj.get("storeId");
+
 			ScriptSession session = sessions.get(sessionId);
+			
+//			ScriptSessionManager ssm = new DefaultScriptSessionManager();
+//			ScriptSession session = ssm.getScriptSession(sessionId);
+//			ssm.setScriptSessionTimeout(100*60);
+			
+//			if(session.isInvalidated())
+//				logger.debug("Script invalid "+session.getId()+" timeout is "+ssm.getScriptSessionTimeout());
+//			else
+//				logger.debug("Script still valid "+ssm.getScriptSessionTimeout()+" storeID: "+session.getAttribute("storeId"));
 
 			// Make sure the callback is set to something
 			if(session.getAttribute("callback") == null)
 				session.setAttribute("callback", "Ext.emptyFn");
+			
+//			session.setAttribute("callback", callback);
+//			session.setAttribute("storeId", storeId);
 
 			session.setAttribute("results", newResults);
 
