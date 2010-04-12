@@ -1,5 +1,5 @@
 #summary Project installation, setup, and running instructions
-#labels Phase-Deploy
+#labels Phase-Deploy,Featured
 
 = Introduction =
 
