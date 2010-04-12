@@ -1,5 +1,5 @@
 #summary Steps for creating and compiling an OSGi compatible bundle.
-#labels Phase-Deploy
+#labels Phase-Deploy,Featured
 
 = Introduction =
 
